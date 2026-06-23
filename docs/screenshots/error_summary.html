@@ -1,0 +1,26 @@
+﻿<html><head><title>Error Handling Summary</title>
+<style>body{font-family:Segoe UI,sans-serif;padding:30px;background:#1e1e1e;color:#d4d4d4}
+h2{color:#569cd6;border-bottom:1px solid #333;padding-bottom:8px}
+table{border-collapse:collapse;width:100%;margin:20px 0}
+th,td{border:1px solid #444;padding:12px;text-align:left;font-size:13px}
+th{background:#252526;color:#569cd6;font-weight:600}
+td{background:#1e1e1e}.pass{color:#4ec9b0;font-weight:bold}.code{font-family:Consolas;background:#2d2d2d;padding:15px;border-radius:5px;margin:15px 0;line-height:1.8;font-size:12px}.label{color:#888;font-size:11px;text-transform:uppercase;margin-top:20px;font-weight:600}</style>
+</head><body>
+<h2>Task 7: Error Handling Implementation</h2>
+<table>
+<tr><th>Situation</th><th>Expected Behaviour</th><th>Implementation</th></tr>
+<tr><td><b>Backend not running</b></td><td>Frontend shows connection error</td><td class='pass'>✓ catch block → network error message</td></tr>
+<tr><td><b>Model not running</b></td><td>Backend returns clear error</td><td class='pass'>✓ /health → "degraded", /ask → HTTP 503</td></tr>
+<tr><td><b>Empty question</b></td><td>Frontend asks to enter question</td><td class='pass'>✓ Backend 400 + frontend alert</td></tr>
+<tr><td><b>Slow response</b></td><td>Frontend shows loading/spinner</td><td class='pass'>✓ Animated ping loading spinner</td></tr>
+</table>
+<div class='label'>API Error Responses</div>
+<div class='code'>
+Empty Question → HTTP 400<br>
+{ "detail": "Question cannot be empty or just whitespace." }<br><br>
+LLM Unavailable → HTTP 503<br>
+{ "detail": "Local LLM service is currently unavailable. Details: ..." }<br><br>
+Invalid Rating → HTTP 422<br>
+{ "detail": [{"msg": "Rating must be one of: Average, Good, Poor"}] }
+</div>
+</body></html>

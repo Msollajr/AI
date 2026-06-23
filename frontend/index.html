@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>UDSM Student Support AI Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            mancity: {
+              navy: { DEFAULT: '#0C1836', light: '#132257', hover: '#1C2C5B', darkBorder: '#1E2D5A' },
+              sky: { DEFAULT: '#6CABDD', hover: '#5E9ED3', light: 'rgba(108, 171, 221, 0.08)' },
+              gold: { DEFAULT: '#FFC20E', hover: '#E5AF0D' },
+              bgDark: '#080D1A',
+              darkSurface: '#111A30'
+            }
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          boxShadow: {
+            'premium': '0 10px 30px -15px rgba(0,0,0,0.06)',
+            'premium-hover': '0 20px 40px -20px rgba(0,0,0,0.1)',
+            'dark-premium': '0 10px 30px -15px rgba(0,0,0,0.5)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #6CABDD;
+      opacity: 0.3;
+      border-radius: 3px;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: #6CABDD;
+      opacity: 0.5;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #5E9ED3;
+    }
+
+    button svg,
+    a svg {
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body class="h-full bg-slate-50 text-slate-800 dark:bg-mancity-bgDark dark:text-slate-100 flex overflow-hidden">
+
+  <!-- Mobile Sidebar Overlay Backdrop -->
+  <div id="sidebar-overlay" onclick="closeMobileSidebar()"
+    class="fixed inset-0 z-30 bg-black/50 hidden md:hidden transition-opacity duration-300"></div>
+
+  <!-- Left Sidebar -->
+  <aside id="sidebar"
+    class="md:static md:z-auto fixed inset-y-0 left-0 z-40 w-64 md:w-64 border-r flex flex-col justify-between transition-all duration-300 flex-shrink-0 bg-mancity-navy border-mancity-navy-darkBorder/40 md:translate-x-0 -translate-x-full md:flex">
+
+    <div>
+      <!-- Brand Header -->
+      <div class="p-4 md:p-6 flex items-center gap-3 border-b border-white/5">
+        <div class="p-1 rounded-xl md:p-1.5 flex justify-center items-center flex-shrink-0">
+          <img src="/static/udsm-logo.png" alt="UDSM Logo" class="w-10 h-10 md:w-12 md:h-12 object-contain">
+        </div>
+        <div class="sidebar-text truncate">
+          <h2 class="font-extrabold text-sm text-white tracking-wider">UDSM AI</h2>
+        </div>
+        <button onclick="closeMobileSidebar()"
+          class="md:hidden ml-auto p-1.5 hover:bg-white/5 rounded-lg text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Navigation links -->
+      <nav class="p-3 md:p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-12rem)]">
+        <a href="#" onclick="switchTab('chat'); closeMobileSidebar()" id="nav-chat"
+          class="nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-mancity-sky text-white font-semibold transition-all duration-200 shadow-sm shadow-mancity-sky/10">
+          <i data-lucide="message-square" class="w-4 h-4 md:w-5 md:h-5 flex-shrink-0"></i>
+          <span class="sidebar-text text-xs md:text-sm">AI Assistant</span>
+        </a>
+
+        <div
+          class="pt-4 md:pt-5 pb-1 md:pb-2 px-3 md:px-4 text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider sidebar-text">
+          University Services
+        </div>
+
+        <div class="space-y-0.5 md:space-y-1">
+          <a href="#" onclick="selectPredefined('How do I register for courses online?'); closeMobileSidebar()"
+            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
+            <i data-lucide="book-open" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
+            <span class="sidebar-text truncate">Course Registration</span>
+          </a>
+          <a href="#" onclick="selectPredefined('What happens if I miss my exam due to illness?'); closeMobileSidebar()"
+            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
+            <span class="sidebar-text truncate">Examination Rules</span>
+          </a>
+          <a href="#"
+            onclick="selectPredefined('How do I search for materials in the library catalog?'); closeMobileSidebar()"
+            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
+            <i data-lucide="library" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
+            <span class="sidebar-text truncate">Library Access</span>
+          </a>
+          <a href="#" onclick="selectPredefined('Who do I contact for ICT support on campus?'); closeMobileSidebar()"
+            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
+            <i data-lucide="monitor" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
+            <span class="sidebar-text truncate">ICT Help Desk</span>
+          </a>
+          <a href="#" onclick="selectPredefined('How do I apply for accommodation on campus?'); closeMobileSidebar()"
+            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
+            <i data-lucide="home" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
+            <span class="sidebar-text truncate">Hostel Application</span>
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="p-3 md:p-4 border-t border-white/5">
+      <div class="flex items-center justify-between">
+        <button onclick="toggleSidebar()"
+          class="hidden md:flex p-2 hover:bg-white/5 rounded-lg transition text-slate-400 hover:text-white"
+          title="Collapse Sidebar">
+          <i id="sidebar-collapse-icon" data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+        <div class="sidebar-text flex items-center gap-2 text-xs">
+          <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-[10px] md:text-xs text-slate-400 font-medium">System Ready</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+    <!-- Top Navbar -->
+    <header
+      class="h-14 md:h-16 bg-white dark:bg-mancity-darkSurface border-b border-slate-200 dark:border-mancity-navy-darkBorder/40 flex items-center justify-between px-3 md:px-6 z-20 flex-shrink-0">
+      <div class="flex items-center gap-2 md:gap-4 min-w-0">
+        <!-- Mobile Sidebar Trigger -->
+        <button onclick="openMobileSidebar()"
+          class="md:hidden p-1.5 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition flex-shrink-0">
+          <i data-lucide="menu" class="w-5 h-5 md:w-6 md:h-6 text-slate-600 dark:text-slate-300"></i>
+        </button>
+        <!-- Desktop Collapse Trigger -->
+        <button onclick="toggleSidebar()"
+          class="hidden md:flex p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition flex-shrink-0">
+          <i id="header-collapse-icon" data-lucide="panel-left" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i>
+        </button>
+        <div class="min-w-0">
+          <h1
+            class="text-sm md:text-lg font-bold tracking-tight flex items-center gap-1 md:gap-2 text-mancity-navy dark:text-white truncate">
+            <img src="/static/udsm-logo.png" alt="UDSM Logo"
+              class="w-8 h-8 md:w-10 md:h-10 object-contain inline-block flex-shrink-0">
+            <span class="truncate">University of Dar es Salaam</span>
+            <span
+              class="hidden md:inline text-[10px] md:text-xs font-semibold px-1.5 md:px-2 py-0.5 rounded-full border bg-mancity-sky/10 border-mancity-sky/20 text-mancity-sky flex-shrink-0">Student
+              Portal</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Controls & Health Indicator -->
+      <div class="flex items-center gap-1 md:gap-4 flex-shrink-0">
+        <div id="connection-status-badge"
+          class="hidden sm:flex items-center gap-1.5 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] md:text-xs font-semibold text-slate-600 dark:text-slate-350">
+          <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-slate-400" id="status-dot"></span>
+          <span id="status-text" class="truncate max-w-[80px] md:max-w-none">Checking...</span>
+        </div>
+        <!-- Mobile status dot -->
+        <span class="sm:hidden w-2 h-2 rounded-full bg-slate-400" id="status-dot-mobile"></span>
+
+        <button onclick="toggleDarkMode()"
+          class="p-1.5 md:p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:rounded-xl transition text-slate-500 dark:text-slate-400"
+          title="Toggle Theme">
+          <i id="theme-toggle-icon" data-lucide="moon" class="w-4 h-4 md:w-5 md:h-5"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Content Workspace -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+      <!-- Tab 1: AI Assistant -->
+      <div id="tab-chat" class="flex-1 flex overflow-hidden">
+        <div class="flex-1 flex flex-col justify-between overflow-hidden bg-white dark:bg-mancity-bgDark relative">
+          <!-- Warnings container -->
+          <div id="llm-warning-bar"
+            class="hidden bg-mancity-sky text-mancity-navy px-3 md:px-6 py-2 md:py-2.5 flex items-center justify-between text-[10px] md:text-xs font-bold select-none shadow-sm">
+            <span class="flex items-center gap-1.5 md:gap-2">
+              <i data-lucide="alert-triangle" class="w-3.5 h-3.5 md:w-4 md:h-4 flex-shrink-0"></i>
+              <span id="llm-warning-text" class="truncate">LLM model not responding.</span>
+            </span>
+          </div>
+
+          <!-- Chat History -->
+          <div id="chat-messages" class="flex-1 overflow-y-auto">
+            <!-- Welcome Splash -->
+            <div id="chat-welcome"
+              class="max-w-2xl mx-auto text-center mt-8 md:mt-20 px-4 md:p-6 space-y-4 md:space-y-6">
+              <div
+                class="inline-flex p-3 md:p-4.5 rounded-2xl md:rounded-3xl bg-mancity-sky/10 text-mancity-sky shadow-sm shadow-mancity-sky/5">
+                <img src="/static/udsm-logo.png" alt="UDSM Logo" class="w-16 h-16 md:w-20 md:h-20 object-contain">
+              </div>
+              <div>
+                <h3 class="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight px-2">
+                  University Student Support AI</h3>
+                <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto px-2">
+                  Ask questions regarding course registration, hostels application, tuition control numbers, or rules
+                  for examination deferment.
+                </p>
+              </div>
+
+              <!-- Suggested Cards -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mt-6 md:mt-10 px-2 md:px-0 suggestion-cards">
+                <button data-question="How do I register for courses online?"
+                  class="p-3 md:p-5 bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl hover:border-mancity-sky text-left transition hover:shadow-premium group cursor-pointer">
+                  <div class="group-hover:scale-105 transition duration-200 text-mancity-sky"><i data-lucide="book-open"
+                      class="w-4 h-4 md:w-5 h-4 md:h-5 mb-1.5 md:mb-2.5"></i></div>
+                  <div class="font-bold text-xs md:text-sm text-slate-900 dark:text-white">Online Course Registration
+                  </div>
+                  <div class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 md:mt-1 leading-relaxed">
+                    Steps, deadlines, and online portal details.</div>
+                </button>
+                <button data-question="What happens if I miss my exam due to illness?"
+                  class="p-3 md:p-5 bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl hover:border-mancity-sky text-left transition hover:shadow-premium group cursor-pointer">
+                  <div class="group-hover:scale-105 transition duration-200 text-mancity-sky"><i data-lucide="file-text"
+                      class="w-4 h-4 md:w-5 h-4 md:h-5 mb-1.5 md:mb-2.5"></i></div>
+                  <div class="font-bold text-xs md:text-sm text-slate-900 dark:text-white">Missed Exams Policy</div>
+                  <div class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 md:mt-1 leading-relaxed">
+                    Sickness certificates and deferment.</div>
+                </button>
+                <button data-question="How do I apply for accommodation on campus?"
+                  class="p-3 md:p-5 bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl hover:border-mancity-sky text-left transition hover:shadow-premium group cursor-pointer">
+                  <div class="group-hover:scale-105 transition duration-200 text-mancity-sky"><i data-lucide="home"
+                      class="w-4 h-4 md:w-5 h-4 md:h-5 mb-1.5 md:mb-2.5"></i></div>
+                  <div class="font-bold text-xs md:text-sm text-slate-900 dark:text-white">Hostel Application Room</div>
+                  <div class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 md:mt-1 leading-relaxed">
+                    Application process and guidelines.</div>
+                </button>
+                <button data-question="What are the available methods for paying fees?"
+                  class="p-3 md:p-5 bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl hover:border-mancity-sky text-left transition hover:shadow-premium group cursor-pointer">
+                  <div class="group-hover:scale-105 transition duration-200 text-mancity-sky"><i
+                      data-lucide="credit-card" class="w-4 h-4 md:w-5 h-4 md:h-5 mb-1.5 md:mb-2.5"></i></div>
+                  <div class="font-bold text-xs md:text-sm text-slate-900 dark:text-white">Tuition Fee Guidelines</div>
+                  <div class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 md:mt-1 leading-relaxed">
+                    Payment modes and control numbers.</div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question Input Panel -->
+          <div
+            class="p-3 md:p-6 bg-white dark:bg-mancity-darkSurface border-t border-slate-200 dark:border-mancity-navy-darkBorder/30">
+            <div class="max-w-3xl mx-auto">
+              <div class="flex items-center justify-between mb-1.5 md:mb-2">
+                <label
+                  class="flex items-center gap-1.5 md:gap-2 text-[10px] md:text-xs font-semibold text-slate-400 dark:text-slate-500 cursor-pointer select-none">
+                  <input type="checkbox" id="improved-prompt-check" checked
+                    class="rounded border-slate-300 dark:border-slate-700 text-mancity-sky focus:ring-mancity-sky w-3 h-3 md:w-4 md:h-4">
+                  <span class="truncate">RAG Context</span>
+                </label>
+                <span class="text-[9px] md:text-[10px] font-medium text-slate-400">Enter to Ask</span>
+              </div>
+
+              <div class="relative flex items-center">
+                <input type="text" id="query-input-field" placeholder="Ask about registration, rules, fees..."
+                  class="w-full bg-slate-50 dark:bg-mancity-navy border border-slate-200 dark:border-slate-800 text-xs md:text-sm rounded-xl md:rounded-2xl pl-3 md:pl-5 pr-12 md:pr-14 py-3 md:py-4 focus:outline-none focus:ring-2 focus:ring-mancity-sky focus:border-transparent dark:text-white">
+                <button onclick="submitQuery()"
+                  class="absolute right-1.5 md:right-2 p-2 md:p-2.5 text-white rounded-lg md:rounded-xl hover:opacity-90 active:scale-95 transition flex items-center justify-center bg-mancity-sky hover:bg-mancity-sky-hover shadow-sm">
+                  <i data-lucide="arrow-right" class="w-4 h-4 md:w-5 md:h-5"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Dashboard Overview -->
+        <div id="tab-dashboard" class="hidden flex-1 overflow-y-auto p-3 md:p-8 bg-slate-50 dark:bg-mancity-bgDark">
+          <div class="max-w-5xl mx-auto space-y-4 md:space-y-8">
+            <!-- Welcome Greeting Card -->
+            <div
+              class="bg-gradient-to-br from-mancity-navy to-mancity-navy-light text-white rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-premium relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
+              <div class="space-y-1.5 md:space-y-2.5 z-10">
+                <span
+                  class="text-[10px] md:text-xs font-bold text-mancity-sky bg-white/10 px-2 md:px-3 py-0.5 md:py-1 rounded-full uppercase tracking-wider">Academic
+                  Year 2025/2026</span>
+                <h2 class="text-xl md:text-3xl font-extrabold tracking-tight">Welcome back to UDSM Portal</h2>
+                <p class="text-xs md:text-sm text-slate-350 max-w-md">Your registered courses, fee status checks, and
+                  hostel details are fully synchronized.</p>
+              </div>
+              <div
+                class="bg-white/10 p-3 md:p-5 rounded-xl md:rounded-2xl flex items-center justify-center text-mancity-sky shadow-inner z-10 flex-shrink-0">
+                <i data-lucide="graduation-cap" class="w-8 h-8 md:w-12 md:h-12"></i>
+              </div>
+              <div
+                class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-mancity-sky/5 blur-3xl pointer-events-none">
+              </div>
+            </div>
+
+            <!-- Info Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
+              <div
+                class="bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl p-4 md:p-6 hover:shadow-premium transition">
+                <div class="flex items-center justify-between mb-3 md:mb-4">
+                  <span
+                    class="text-[10px] md:text-xs font-bold px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400">REGISTERED</span>
+                  <i data-lucide="user-check" class="w-4 h-4 md:w-5 md:h-5 text-emerald-500"></i>
+                </div>
+                <h4
+                  class="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  Registration Status</h4>
+                <p class="text-base md:text-xl font-bold text-slate-900 dark:text-white mt-1">Semester 2 Complete</p>
+                <div class="mt-3 md:mt-4 space-y-1">
+                  <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1 md:h-1.5">
+                    <div class="bg-emerald-500 h-1 md:h-1.5 rounded-full" style="width: 100%;"></div>
+                  </div>
+                  <span class="text-[9px] md:text-[10px] text-slate-400 font-medium">All 6 core modules
+                    registered</span>
+                </div>
+              </div>
+
+              <div
+                class="bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl p-4 md:p-6 hover:shadow-premium transition">
+                <div class="flex items-center justify-between mb-3 md:mb-4">
+                  <span
+                    class="text-[10px] md:text-xs font-bold px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full bg-mancity-sky/15 text-mancity-sky dark:bg-mancity-sky/10">ASSIGNED</span>
+                  <i data-lucide="home" class="w-4 h-4 md:w-5 md:h-5 text-mancity-sky"></i>
+                </div>
+                <h4
+                  class="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  Hostel Allocation</h4>
+                <p class="text-base md:text-xl font-bold text-slate-900 dark:text-white mt-1">Hall of Residence 4</p>
+                <div class="mt-3 md:mt-4 space-y-1">
+                  <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1 md:h-1.5">
+                    <div class="bg-mancity-sky h-1 md:h-1.5 rounded-full" style="width: 100%;"></div>
+                  </div>
+                  <span class="text-[9px] md:text-[10px] text-slate-400 font-medium">Room 102 (Campus Hostel)</span>
+                </div>
+              </div>
+
+              <div
+                class="bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl p-4 md:p-6 hover:shadow-premium transition">
+                <div class="flex items-center justify-between mb-3 md:mb-4">
+                  <span
+                    class="text-[10px] md:text-xs font-bold px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400">CLEARED</span>
+                  <i data-lucide="credit-card" class="w-4 h-4 md:w-5 md:h-5 text-emerald-500"></i>
+                </div>
+                <h4
+                  class="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                  Tuition Fees Status</h4>
+                <p class="text-base md:text-xl font-bold text-slate-900 dark:text-white mt-1">Tsh 0.00 Outstanding</p>
+                <div class="mt-3 md:mt-4 space-y-1">
+                  <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1 md:h-1.5">
+                    <div class="bg-emerald-500 h-1 md:h-1.5 rounded-full" style="width: 100%;"></div>
+                  </div>
+                  <span class="text-[9px] md:text-[10px] text-slate-400 font-medium">Invoice Paid (Control
+                    #9921827)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lower Details Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+              <div
+                class="bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-premium">
+                <h3
+                  class="font-extrabold text-base md:text-lg text-slate-900 dark:text-white mb-3 md:mb-5 flex items-center gap-1.5 md:gap-2">
+                  <i data-lucide="calendar-days" class="w-4 h-4 md:w-5 md:h-5 text-mancity-sky"></i>
+                  <span>Academic Deadlines</span>
+                </h3>
+                <div class="space-y-3 md:space-y-4">
+                  <div
+                    class="flex items-start gap-2 md:gap-4 p-2.5 md:p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg md:rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div
+                      class="p-1.5 md:p-2.5 rounded-lg md:rounded-xl bg-mancity-sky/10 text-mancity-sky flex-shrink-0">
+                      <i data-lucide="calendar" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                    </div>
+                    <div>
+                      <h5 class="text-xs md:text-sm font-bold text-slate-900 dark:text-white">Exam Deferment Submissions
+                      </h5>
+                      <p class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 leading-relaxed">
+                        Medical forms logged with the board 48 hours prior to exam slot.</p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-start gap-2 md:gap-4 p-2.5 md:p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg md:rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div
+                      class="p-1.5 md:p-2.5 rounded-lg md:rounded-xl bg-mancity-gold/10 text-mancity-gold flex-shrink-0">
+                      <i data-lucide="clock" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+                    </div>
+                    <div>
+                      <h5 class="text-xs md:text-sm font-bold text-slate-900 dark:text-white">Late Registration Close
+                      </h5>
+                      <p class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 leading-relaxed">Late
+                        module selections close tomorrow at 23:59.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-premium">
+                <h3
+                  class="font-extrabold text-base md:text-lg text-slate-900 dark:text-white mb-3 md:mb-5 flex items-center gap-1.5 md:gap-2">
+                  <i data-lucide="sparkles" class="w-4 h-4 md:w-5 md:h-5 text-mancity-sky"></i>
+                  <span>Recommendations</span>
+                </h3>
+                <div class="space-y-2.5 md:space-y-3.5">
+                  <div
+                    class="p-3 md:p-4 bg-slate-50 dark:bg-slate-900/40 rounded-lg md:rounded-xl text-[10px] md:text-xs text-slate-500 dark:text-slate-450 border border-slate-100 dark:border-slate-800 leading-relaxed">
+                    💡 <strong>Library Tip:</strong> Off-campus access requires VPN authentication. Ask the AI Assistant
+                    for the setup guide.
+                  </div>
+                  <div
+                    class="p-3 md:p-4 bg-slate-50 dark:bg-slate-900/40 rounded-lg md:rounded-xl text-[10px] md:text-xs text-slate-500 dark:text-slate-450 border border-slate-100 dark:border-slate-800 leading-relaxed">
+                    💡 <strong>Hostel Tip:</strong> Accommodation clearance passes are generated inside the student
+                    registry portal downloads.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+  </main>
+
+  <script>
+    const API_URL = "";
+    let currentTab = "chat";
+    let isCitationsOpen = false;
+    const messageData = {};
+
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+      checkServices();
+      setInterval(checkServices, 10000);
+      document.getElementById("query-input-field").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") submitQuery();
+      });
+      document.querySelectorAll(".suggestion-cards button[data-question]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          selectPredefined(btn.getAttribute("data-question"));
+        });
+      });
+    });
+
+    function openMobileSidebar() {
+      document.getElementById("sidebar").classList.remove("-translate-x-full");
+      document.getElementById("sidebar-overlay").classList.remove("hidden");
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById("sidebar").classList.add("-translate-x-full");
+      document.getElementById("sidebar-overlay").classList.add("hidden");
+    }
+
+    function openMobileCitations() {
+      const panel = document.getElementById("citations-panel");
+      panel.classList.remove("hidden");
+      document.getElementById("citations-overlay").classList.remove("hidden");
+    }
+
+    function closeMobileCitations() {
+      const panel = document.getElementById("citations-panel");
+      panel.classList.add("hidden");
+      document.getElementById("citations-overlay").classList.add("hidden");
+    }
+
+    async function checkServices() {
+      const dot = document.getElementById("status-dot");
+      const dotMobile = document.getElementById("status-dot-mobile");
+      const text = document.getElementById("status-text");
+      const warningBar = document.getElementById("llm-warning-bar");
+
+      try {
+        const response = await fetch(API_URL + "/health");
+        if (response.ok) {
+          const data = await response.json();
+          const llmConnected = data.llm_connected;
+          const dotClass = "w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500 shadow-sm";
+          if (dot) dot.className = dotClass;
+          if (dotMobile) dotMobile.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-sm";
+          if (text) text.textContent = "Online";
+          if (llmConnected) {
+            if (warningBar) warningBar.classList.add("hidden");
+          } else {
+            if (warningBar) {
+              warningBar.classList.remove("hidden");
+              document.getElementById("llm-warning-text").textContent = "LLM offline: " + (data.error || "Ollama disconnected.");
+            }
+          }
+        } else {
+          showErrorState();
+        }
+      } catch (err) {
+        showErrorState();
+      }
+    }
+
+    function showErrorState() {
+      const dot = document.getElementById("status-dot");
+      const dotMobile = document.getElementById("status-dot-mobile");
+      const text = document.getElementById("status-text");
+      const warningBar = document.getElementById("llm-warning-bar");
+      if (dot) dot.className = "w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-red-500 animate-pulse";
+      if (dotMobile) dotMobile.className = "w-2 h-2 rounded-full bg-red-500 animate-pulse";
+      if (text) text.textContent = "Offline";
+      if (warningBar) {
+        warningBar.classList.remove("hidden");
+        document.getElementById("llm-warning-text").textContent = "Backend disconnected. Run the FastAPI server.";
+      }
+    }
+
+    function switchTab(tabName) {
+      currentTab = tabName;
+      document.getElementById("tab-chat").classList.toggle("hidden", tabName !== "chat");
+      document.getElementById("tab-dashboard").classList.toggle("hidden", tabName !== "dashboard");
+
+      const chatBtn = document.getElementById("nav-chat");
+      const dashboardBtn = document.getElementById("nav-dashboard");
+
+      if (tabName === "chat") {
+        chatBtn.style.backgroundColor = "#6CABDD";
+        chatBtn.className = "nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-white font-semibold transition-all duration-200 shadow-sm shadow-mancity-sky/10";
+        dashboardBtn.style.backgroundColor = "transparent";
+        dashboardBtn.className = "nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all duration-200";
+      } else {
+        chatBtn.style.backgroundColor = "transparent";
+        chatBtn.className = "nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all duration-200";
+        dashboardBtn.style.backgroundColor = "#6CABDD";
+        dashboardBtn.className = "nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-white font-semibold transition-all duration-200 shadow-sm shadow-mancity-sky/10";
+      }
+    }
+
+    function selectPredefined(questionText) {
+      try {
+        switchTab("chat");
+        const input = document.getElementById("query-input-field");
+        if (input) {
+          input.value = questionText;
+          submitQuery();
+        }
+      } catch (e) {
+        console.error("selectPredefined error:", e);
+      }
+    }
+
+    let sidebarCollapsed = false;
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      const icon = document.getElementById("sidebar-collapse-icon");
+      sidebarCollapsed = !sidebarCollapsed;
+
+      if (sidebarCollapsed) {
+        sidebar.classList.remove("w-64");
+        sidebar.classList.add("w-16");
+        if (icon) icon.setAttribute("data-lucide", "chevron-right");
+      } else {
+        sidebar.classList.remove("w-16");
+        sidebar.classList.add("w-64");
+        if (icon) icon.setAttribute("data-lucide", "chevron-left");
+      }
+
+      document.querySelectorAll(".sidebar-text").forEach(el => {
+        el.classList.toggle("hidden", sidebarCollapsed);
+      });
+
+      lucide.createIcons();
+    }
+
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const icon = document.getElementById("theme-toggle-icon");
+      const isDark = html.classList.toggle("dark");
+      icon.setAttribute("data-lucide", isDark ? "sun" : "moon");
+      lucide.createIcons();
+    }
+
+    function toggleCitations(show) {
+      const panel = document.getElementById("citations-panel");
+      isCitationsOpen = show;
+      if (window.innerWidth < 768) {
+        if (show) {
+          openMobileCitations();
+        } else {
+          closeMobileCitations();
+        }
+      } else {
+        panel.classList.toggle("hidden", !show);
+      }
+    }
+
+    async function submitQuery() {
+      const input = document.getElementById("query-input-field");
+      const query = input.value.trim();
+      const useImproved = document.getElementById("improved-prompt-check").checked;
+
+      if (!query) {
+        alert("Please enter a question.");
+        return;
+      }
+
+      const splash = document.getElementById("chat-welcome");
+      if (splash) splash.remove();
+
+      appendMessage("user", query);
+      input.value = "";
+
+      const loaderId = appendMessage("loader", "Retrieving database records...");
+
+      try {
+        const response = await fetch(API_URL + "/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: query, use_improved_prompt: useImproved })
+        });
+
+        document.getElementById(loaderId).remove();
+
+        if (response.ok) {
+          const data = await response.json();
+          appendMessage("assistant", data.answer, data.rag_context_used, data.category, query, data.sources, data.confidence_label, data.confidence_score, data.faq_direct);
+          updateCitationsPane(data.rag_context_used, data.category, query, data.sources);
+        } else {
+          const err = await response.json();
+          appendMessage("assistant", "⚠️ Error: " + (err.detail || "Failed to retrieve a response."));
+        }
+      } catch (e) {
+        document.getElementById(loaderId).remove();
+        appendMessage("assistant", "❌ Network Error: Could not reach the API backend server.");
+      }
+    }
+
+    function appendMessage(sender, text, ragUsed = false, category = "", userQuestion = "", sources = [], confidenceLabel = "Low", confidenceScore = 0, faqDirect = false) {
+      const chatContainer = document.getElementById("chat-messages");
+      const msgId = "msg-" + Date.now();
+      const bubble = document.createElement("div");
+      bubble.id = msgId;
+
+      if (sender === "user") {
+        bubble.className = "w-full py-4 md:py-6 border-b border-slate-200/60 dark:border-mancity-navy-darkBorder/40 bg-transparent flex gap-3 md:gap-4 px-3 md:px-6";
+        bubble.innerHTML = `
+          <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex-shrink-0 flex items-center justify-center text-slate-900 shadow-sm" style="background-color: #FFC20E;">
+            <i data-lucide="user" class="w-3 h-3 md:w-4 md:h-4"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5 md:mb-1">Student</p>
+            <div class="text-xs md:text-sm text-slate-800 dark:text-slate-100 leading-relaxed">${text}</div>
+          </div>
+        `;
+      } else if (sender === "loader") {
+        bubble.className = "w-full py-4 md:py-6 border-b border-slate-200/60 dark:border-mancity-navy-darkBorder/40 bg-mancity-sky/[0.04] flex gap-3 md:gap-4 px-3 md:px-6";
+        bubble.innerHTML = `
+          <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white" style="background-color: #6CABDD;">
+            <i data-lucide="graduation-cap" class="w-3 h-3 md:w-4 md:h-4"></i>
+          </div>
+          <div class="flex-1 flex items-center gap-2 md:gap-3">
+            <span class="flex h-2 w-2 md:h-2.5 md:w-2.5 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style="background-color: #6CABDD;"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5" style="background-color: #6CABDD;"></span>
+            </span>
+            <span class="text-[10px] md:text-xs text-slate-400 font-medium">${text}</span>
+          </div>
+        `;
+      } else {
+        let badge = "";
+        if (ragUsed) {
+          badge = `<span class="inline-flex items-center gap-1 mt-2 md:mt-3 px-1.5 md:px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold border bg-mancity-sky/15 border-mancity-sky/30 text-mancity-navy dark:text-mancity-sky">
+            <i data-lucide="check" class="w-2.5 h-2.5 md:w-3 md:h-3"></i> VERIFIED: ${category.toUpperCase()}
+          </span>`;
+        } else {
+          badge = `<span class="inline-flex items-center gap-1 mt-2 md:mt-3 px-1.5 md:px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold bg-slate-100 text-slate-500 dark:bg-slate-850 dark:text-slate-400">GENERAL</span>`;
+        }
+
+        const confColors = { "High": "#10B981", "Medium": "#F59E0B", "Low": "#EF4444" };
+        const confidenceBadge = "";
+
+        let sourcesHtml = "";
+        if (sources && sources.length > 0) {
+          sourcesHtml = `<div class="mt-2 md:mt-3 text-[9px] md:text-[10px] text-slate-400 font-medium"><span class="font-bold uppercase tracking-wider text-slate-500">Sources:</span> ${sources.join(", ")}</div>`;
+        }
+
+        let citationBtn = "";
+        if (ragUsed) {
+          citationBtn = `<button onclick="toggleCitations(true)" class="p-1 md:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-mancity-sky transition" title="View Sources">
+            <i data-lucide="book-open" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+          </button>`;
+        }
+
+        messageData[msgId] = { question: userQuestion, answer: text, sources: sources || [] };
+
+        const ratingActions = `
+          <div class="feedback-pill-container mt-3 md:mt-4 flex flex-wrap items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-2 md:pt-3 gap-1.5 md:gap-2">
+            <div class="flex items-center gap-1 md:gap-2">
+              <button onclick="submitFeedback('${msgId}', 'Good')" class="px-2 md:px-3 py-1 rounded-lg text-[10px] md:text-xs font-semibold border border-slate-200 dark:border-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:text-emerald-500 hover:border-emerald-300 transition">👍 Good</button>
+              <button onclick="submitFeedback('${msgId}', 'Average')" class="px-2 md:px-3 py-1 rounded-lg text-[10px] md:text-xs font-semibold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-650 transition">😐 Average</button>
+              <button onclick="submitFeedback('${msgId}', 'Poor')" class="px-2 md:px-3 py-1 rounded-lg text-[10px] md:text-xs font-semibold border border-slate-200 dark:border-slate-700 hover:bg-rose-50 dark:hover:bg-rose-950/20 hover:text-rose-500 hover:border-rose-300 transition">👎 Poor</button>
+            </div>
+            <div class="flex items-center gap-1">
+              ${citationBtn}
+              <button onclick="copyToClipboard('${msgId}')" class="p-1 md:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-450 hover:text-slate-650" title="Copy response">
+                <i data-lucide="copy" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+              </button>
+            </div>
+          </div>
+        `;
+
+        bubble.className = "w-full py-4 md:py-6 border-b border-slate-200/60 dark:border-mancity-navy-darkBorder/40 flex gap-3 md:gap-4 px-3 md:px-6 bg-mancity-sky/[0.04]";
+        bubble.innerHTML = `
+          <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white" style="background-color: #6CABDD;">
+            <i data-lucide="graduation-cap" class="w-3 h-3 md:w-4 md:h-4"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[10px] md:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5 md:mb-1">UDSM Assistant</p>
+            <div class="text-xs md:text-sm leading-relaxed text-slate-800 dark:text-slate-100 whitespace-pre-line message-body">${text}</div>
+            <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
+              ${badge}
+              ${confidenceBadge}
+            </div>
+            ${sourcesHtml}
+            ${ratingActions}
+          </div>
+        `;
+      }
+
+      chatContainer.appendChild(bubble);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+      lucide.createIcons();
+      return msgId;
+    }
+
+    async function submitFeedback(bubbleId, ratingValue) {
+      const data = messageData[bubbleId] || {};
+      try {
+        const response = await fetch(API_URL + "/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: data.question || "", answer: data.answer || "", rating: ratingValue })
+        });
+        if (response.ok) {
+          const feedbackContainer = document.getElementById(bubbleId).querySelector(".feedback-pill-container");
+          if (feedbackContainer) {
+            feedbackContainer.innerHTML = `<span class="text-[10px] md:text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5 mt-2"><i data-lucide="check" class="w-3 h-3 md:w-3.5 md:h-3.5"></i> Feedback: ${ratingValue}</span>`;
+            lucide.createIcons();
+          }
+        }
+      } catch (err) {
+        console.error("Feedback error:", err);
+      }
+    }
+
+    function copyToClipboard(bubbleId) {
+      const text = document.getElementById(bubbleId).querySelector(".message-body").innerText;
+      navigator.clipboard.writeText(text).then(() => alert("Copied!")).catch(err => console.error(err));
+    }
+
+    function updateCitationsPane(ragUsed, category, query, sources = []) {
+      const content = document.getElementById("citations-content");
+      if (!ragUsed) {
+        content.innerHTML = `<div class="flex flex-col items-center justify-center text-center mt-8 md:mt-12 text-slate-400 space-y-3"><i data-lucide="alert-circle" class="w-6 h-6 md:w-8 md:h-8 opacity-60"></i><p class="text-xs italic">No matching RAG database entry found.</p></div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      let sourcesList = "";
+      if (sources && sources.length > 0) {
+        sourcesList = sources.map(s => `<li class="text-[10px] md:text-xs text-mancity-sky font-medium">${s}</li>`).join("");
+        sourcesList = `<div class="space-y-1.5 md:space-y-2"><span class="text-[9px] md:text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-widest">Sources Consulted</span><ul class="space-y-0.5 md:space-y-1">${sourcesList}</ul></div>`;
+      }
+
+      content.innerHTML = `
+        <div class="space-y-3 md:space-y-4">
+          <div class="p-3 md:p-4 rounded-lg md:rounded-xl border bg-mancity-sky/10 border-mancity-sky/20 text-mancity-navy dark:text-mancity-sky">
+            <span class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Category</span>
+            <h4 class="font-bold text-xs md:text-sm mt-0.5">${category.toUpperCase()}</h4>
+          </div>
+          <div class="space-y-1.5 md:space-y-2">
+            <span class="text-[9px] md:text-[10px] font-bold text-slate-450 dark:text-slate-500 uppercase tracking-widest">Question</span>
+            <div class="text-[10px] md:text-xs leading-relaxed bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 whitespace-pre-wrap">${query}</div>
+          </div>
+          ${sourcesList}
+        </div>
+      `;
+      lucide.createIcons();
+      toggleCitations(true);
+    }
+  </script>
+</body>
+
+</html>

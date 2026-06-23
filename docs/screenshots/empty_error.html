@@ -1,0 +1,14 @@
+﻿<html><head><title>Empty Question Error</title>
+<style>body{font-family:Consolas,monospace;padding:25px;background:#1e1e1e;color:#d4d4d4;font-size:13px}
+h2{color:#f44747;border-bottom:1px solid #f44747;padding-bottom:8px}.box{background:#2d2d2d;padding:15px;border-radius:5px;margin:15px 0;border-left:3px solid #f44747;color:#ce9178}
+.pass{color:#4ec9b0;font-weight:bold}.note{color:#888;margin-top:10px}</style>
+</head><body>
+<h2>Error Handling: Empty Question Rejected</h2>
+<div class='box'>
+HTTP <span style='color:#f44747;font-weight:bold'>400 Bad Request</span><br><br>
+{<br>
+&nbsp;&nbsp;"detail": "Question cannot be empty or just whitespace."<br>
+}
+</div>
+<p class='pass'>✓ Expected behaviour: Backend correctly rejects empty questions with 400 status</p>
+</body></html>

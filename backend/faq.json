@@ -1,0 +1,52 @@
+{
+  "university_faqs": [
+    {
+      "category": "course registration",
+      "keywords": ["register", "add", "drop", "course", "registration", "enrolment", "enroll"],
+      "question": "How do I register for courses?",
+      "answer": "Course registration is done online via the Student Portal during the first two weeks of the semester. To register: log in to your portal, navigate to 'Course Registration', select your required and elective courses based on your curriculum sheet, and click 'Submit'. You must consult your Academic Advisor before finalizing. The deadline for adding or dropping courses is the Friday of the second week of lectures."
+    },
+    {
+      "category": "examination rules",
+      "keywords": ["exam", "examination", "rules", "cheating", "grade", "gpa", "supp", "supplementary"],
+      "question": "What are the rules regarding examinations and grading?",
+      "answer": "1. Students must bring their valid Student ID card to all exam rooms.\n2. No mobile phones, smartwatches, or unauthorized materials are allowed inside the exam hall. Possession of such items is treated as academic dishonesty.\n3. Students arriving more than 30 minutes late will not be admitted.\n4. Grading is based on a letter grade system (A to F). A GPA of 2.0 or above is required to remain in good academic standing. Supplementary examinations are held for students who failed with an 'F' grade but obtained a minimum GPA threshold of 1.5 in the semester."
+    },
+    {
+      "category": "library services",
+      "keywords": ["library", "books", "borrow", "return", "database", "study", "space", "e-resources"],
+      "question": "What services does the university library offer and how do I borrow books?",
+      "answer": "The University Main Library is open from 8:00 AM to 10:00 PM on weekdays and 9:00 AM to 5:00 PM on weekends. Students can borrow up to 5 books at a time for a duration of 14 days. Renewals can be made online via the Library OPAC portal twice. The library also provides access to online academic journals, databases, e-resources, and silent study rooms. Fines for overdue books are $0.50 per book per day."
+    },
+    {
+      "category": "ICT support",
+      "keywords": ["wifi", "internet", "password", "email", "portal", "ict", "computer", "login", "reset"],
+      "question": "How do I connect to campus Wi-Fi or reset my student email password?",
+      "answer": "To connect to the campus Wi-Fi ('UniStudent-WiFi'), select the network on your device, use your student registration number as the username, and enter your portal password. For password resets, portal issues, or student email problems, visit the ICT Support Desk on the ground floor of the Science Building or send an email to support@university.edu. You can also self-reset using the 'Forgot Password' link on the portal page if you set up security questions."
+    },
+    {
+      "category": "hostel application",
+      "keywords": ["hostel", "accommodation", "room", "housing", "dorm", "residence"],
+      "question": "How do I apply for on-campus hostel accommodation?",
+      "answer": "On-campus hostel accommodation is allocated on a first-come, first-served basis, with priority given to first-year undergraduate and international students. Applications open online on the Student Portal one month before the semester starts. You must pay a non-refundable application fee first, select your preferred hostel block, and upload your proof of payment. Results are published on the portal two weeks before classes commence."
+    },
+    {
+      "category": "fee payment",
+      "keywords": ["fees", "payment", "tuition", "bank", "installment", "finance", "invoice", "receipt"],
+      "question": "What are the rules and options for fee payment?",
+      "answer": "Tuition and hostel fees must be paid to the university bank accounts listed on the portal. Payments can be made via bank deposit, online bank transfer, or portal card payment. The university offers a two-installment plan: 60% must be paid prior to registration in week 1, and the remaining 40% must be paid by the 8th week of the semester. Students with outstanding balances will be blocked from accessing examination halls and receiving exam results."
+    },
+    {
+      "category": "academic calendar",
+      "keywords": ["calendar", "semester", "break", "holiday", "dates", "lecture", "exams", "term"],
+      "question": "Where can I find the academic calendar and key dates?",
+      "answer": "The academic calendar is divided into two semesters. Semester 1 runs from September to January, and Semester 2 runs from February to June. Each semester consists of 12 weeks of lectures, a 1-week mid-semester break, 1 week of study leave, and 2 weeks of examinations. The full academic calendar showing registration dates, holidays, and exam periods is posted on the official university website homepage under 'Resources' -> 'Academic Calendar'."
+    },
+    {
+      "category": "student conduct",
+      "keywords": ["conduct", "behavior", "disciplinary", "rules", "dress", "code", "harassment", "respect"],
+      "question": "What is the university code of conduct?",
+      "answer": "Students are expected to maintain high standards of discipline, honesty, and respect. Smoking, alcohol consumption, and drug abuse are strictly prohibited on campus. Students must adhere to the university dress code (decent attire). Any form of harassment, fighting, destruction of university property, or academic dishonesty will lead to immediate disciplinary action, which may include suspension or expulsion. Disciplinary hearings are managed by the Dean of Students' office."
+    }
+  ]
+}

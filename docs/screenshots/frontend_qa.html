@@ -1,0 +1,55 @@
+﻿<html><head><title>Frontend Q&A Interaction</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0C1836;color:#fff;display:flex;justify-content:center;padding:20px}
+.chat-wrapper{width:500px;background:#111A30;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.header{background:linear-gradient(135deg,#0C1836,#132257);padding:20px;border-bottom:1px solid #1E2D5A;display:flex;align-items:center;gap:12px}
+.header h1{font-size:16px;font-weight:700;color:#fff}
+.header span{font-size:11px;color:#6CABDD}
+.chat-area{padding:20px;min-height:400px;display:flex;flex-direction:column;gap:15px}
+.msg-user{background:#132257;padding:14px;border-radius:12px 12px 4px 12px;max-width:85%;align-self:flex-end;border:1px solid #1E2D5A;font-size:13px;color:#e0e0e0}
+.msg-user::before{content:"You";display:block;font-size:10px;color:#6CABDD;margin-bottom:4px;font-weight:600}
+.msg-bot{background:#0a1428;padding:14px;border-radius:12px 12px 12px 4px;max-width:95%;align-self:flex-start;border:1px solid #1E2D5A;font-size:12px;color:#d4d4d4;line-height:1.6}
+.msg-bot::before{content:"UDSM Assistant";display:block;font-size:10px;color:#FFC20E;margin-bottom:4px;font-weight:600}
+.questitle{color:#6CABDD;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;margin-top:8px;margin-bottom:4px}
+.steps{color:#4ec9b0;font-weight:500;font-size:11px;margin-top:6px}
+.links{color:#569cd6;font-size:11px;margin-top:6px}
+.sources{color:#888;font-size:10px;margin-top:6px;font-style:italic}
+.conf{color:#FFC20E;font-size:11px;font-weight:600;margin-top:6px;padding-top:6px;border-top:1px solid #1E2D5A}
+.badge{display:inline-block;background:#1a3a2a;color:#4ec9b0;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.input-area{padding:15px 20px;border-top:1px solid #1E2D5A;display:flex;gap:10px;background:#0E1A30}
+.input-area input{flex:1;background:#1a2a45;border:1px solid #1E2D5A;border-radius:8px;padding:12px;color:#fff;font-size:13px;outline:none}
+.input-area input::placeholder{color:#4a5a7a}
+.input-area button{background:#6CABDD;border:none;border-radius:8px;padding:12px 20px;color:#0C1836;font-weight:600;cursor:pointer;font-size:13px}
+.input-area button:hover{background:#5E9ED3}
+</style>
+</head><body>
+<div class='chat-wrapper'>
+<div class='header'>
+<div><h1>UDSM Student Support AI</h1><span>University of Dar es Salaam</span></div>
+</div>
+<div class='chat-area'>
+<div class='msg-user'>What are the hostel application procedures?</div>
+<div class='msg-bot'>
+<b style='color:#fff'>Answer:</b><br>
+On-campus hostel accommodation is allocated on a first-come, first-served basis, with priority given to first-year undergraduate and international students. Applications open online on the Student Portal one month before the semester starts. You must pay a non-refundable application fee first, select your preferred hostel block, and upload your proof of payment.<br><br>
+<div class='questitle'>What you should do:</div>
+1. Log in to the Student Portal.<br>
+2. Navigate to 'Hostel Application'.<br>
+3. Pay the non-refundable application fee.<br>
+4. Select your preferred hostel block.<br>
+5. Upload proof of payment.<br><br>
+<div class='questitle'>Useful Links:</div>
+<span class='links'>• Official UDSM Website: https://udsm.ac.tz<br>• Student Services Portal</span><br><br>
+<div class='questitle'>Sources:</div>
+<span class='sources'>UDSM FAQ - Hostel Application, Hostel Guidelines</span><br><br>
+<div class='conf'>Confidence: <span class='badge'>High (95%)</span></div>
+</div>
+</div>
+<div class='input-area'>
+<input type='text' placeholder='Ask a question about university services...' value='What are the hostel application procedures?' disabled>
+<button>Send</button>
+</div>
+</div>
+</body></html>
