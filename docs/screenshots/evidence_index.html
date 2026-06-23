@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IS 365 — Evidence Index</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; padding: 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 2rem; color: #f1f5f9; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem; }
+    h1 small { font-size: 1rem; color: #6CABDD; font-weight: 400; }
+    .subtitle { color: #64748b; margin-bottom: 2rem; font-size: 0.95rem; }
+    
+    .task-grid { display: grid; gap: 1.5rem; margin: 2rem 0; }
+    .task-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 1.5rem; transition: border-color 0.2s; }
+    .task-card:hover { border-color: #6CABDD; }
+    .task-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .task-number { font-size: 0.75rem; font-weight: 700; color: #6CABDD; background: rgba(108,171,221,0.1); padding: 0.25rem 0.75rem; border-radius: 999px; letter-spacing: 0.05em; }
+    .task-title { font-size: 1.1rem; font-weight: 700; color: #f1f5f9; }
+    .status-badge { font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 999px; margin-left: auto; }
+    .status-done { background: #10b981; color: white; }
+    .status-partial { background: #f59e0b; color: white; }
+    .status-missing { background: #ef4444; color: white; }
+
+    .screenshot-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.75rem 0; }
+    .screenshot-link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; padding: 0.3rem 0.7rem; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #6CABDD; text-decoration: none; transition: all 0.2s; }
+    .screenshot-link:hover { background: #1e293b; border-color: #6CABDD; }
+    .screenshot-link .icon { font-size: 0.9rem; }
+    .screenshot-link .file { color: #94a3b8; font-size: 0.7rem; }
+
+    .checklist { margin: 0.75rem 0; }
+    .checklist li { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; color: #94a3b8; padding: 0.25rem 0; list-style: none; }
+    .checklist li .check { color: #10b981; flex-shrink: 0; }
+    .checklist li .cross { color: #ef4444; flex-shrink: 0; }
+    .checklist li .pending { color: #f59e0b; flex-shrink: 0; }
+    .code { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: #0f172a; padding: 0.15rem 0.4rem; border-radius: 3px; color: #cbd5e1; }
+    .note { font-size: 0.8rem; color: #64748b; background: #0f172a; padding: 0.75rem; border-radius: 8px; margin-top: 0.75rem; border-left: 3px solid #6CABDD; }
+    hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    .bonus-tag { font-size: 0.65rem; background: #8b5cf6; color: white; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 700; letter-spacing: 0.05em; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎓 IS 365 — Evidence Index <small>Self-Hosted LLM Application</small></h1>
+    <p class="subtitle">University Student Support Assistant &mdash; Complete assignment evidence in one place.</p>
+
+    <!-- Task 1 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 1</span>
+        <span class="task-title">Environment Setup</span>
+        <span class="status-badge status-done">✅ DONE</span>
+      </div>
+      <div class="screenshot-list">
+        <a href="09_venv_activated.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> venv activated <span class="file">09_venv_activated.png</span></a>
+        <a href="10_pip_list.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> pip install <span class="file">10_pip_list.png</span></a>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> Virtual environment created: <span class="code">python -m venv venv</span></li>
+        <li><span class="check">✅</span> All dependencies installed from <span class="code">requirements.txt</span></li>
+      </ul>
+    </div>
+
+    <!-- Task 2 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 2</span>
+        <span class="task-title">Local LLM Setup (Ollama + llama3.2:1b)</span>
+        <span class="status-badge status-partial">⚠️ PARTIAL</span>
+      </div>
+      <div class="screenshot-list">
+        <a href="11_ollama_running.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> ollama running <span class="file">11_ollama_running.png</span></a>
+        <a href="02_health_response.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> health response <span class="file">02_health_response.png</span></a>
+        <a href="03_ask_response.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> ask response <span class="file">03_ask_response.png</span></a>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> Model running screenshot: <span class="code">ollama ps</span> / <span class="code">ollama list</span></li>
+        <li><span class="check">✅</span> Successful API response (<span class="code">/health</span> and <span class="code">/ask</span>)</li>
+        <li><span class="pending">⚠️</span> <strong>Missing:</strong> Model being pulled screenshot (<span class="code">ollama pull llama3.2:1b</span>) — <a href="how_to_capture_screenshots.html" style="color:#6CABDD;">see guide</a></li>
+      </ul>
+    </div>
+
+    <!-- Task 3 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 3</span>
+        <span class="task-title">FastAPI Backend</span>
+        <span class="status-badge status-partial">⚠️ PARTIAL</span>
+      </div>
+      <div class="screenshot-list">
+        <a href="01_swagger_docs.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> Swagger /docs <span class="file">01_swagger_docs.png</span></a>
+        <a href="02_health_response.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> /health <span class="file">02_health_response.png</span></a>
+        <a href="03_ask_response.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> /ask <span class="file">03_ask_response.png</span></a>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> Swagger /docs screenshot</li>
+        <li><span class="check">✅</span> Successful /health response</li>
+        <li><span class="check">✅</span> Successful /ask response</li>
+        <li><span class="pending">⚠️</span> <strong>Missing:</strong> FastAPI running in terminal screenshot — <a href="how_to_capture_screenshots.html" style="color:#6CABDD;">see guide</a></li>
+      </ul>
+    </div>
+
+    <!-- Task 4 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 4</span>
+        <span class="task-title">Frontend Development</span>
+        <span class="status-badge status-done">✅ DONE</span>
+      </div>
+      <div class="screenshot-list">
+        <a href="04_frontend.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> frontend <span class="file">04_frontend.png</span></a>
+        <a href="12_frontend_qa.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> Q&A interaction <span class="file">12_frontend_qa.png</span></a>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> Frontend interface screenshot</li>
+        <li><span class="check">✅</span> Question-and-answer interaction screenshot</li>
+      </ul>
+    </div>
+
+    <!-- Task 5 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 5</span>
+        <span class="task-title">API Test Script</span>
+        <span class="status-badge status-done">✅ DONE</span>
+      </div>
+      <div class="screenshot-list">
+        <a href="08_test_results.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> test output <span class="file">08_test_results.png</span></a>
+        <a href="test_output.txt" class="screenshot-link" target="_blank"><span class="icon">📄</span> test_output.txt <span class="file">test_output.txt</span></a>
+        <a href="test_results.html" class="screenshot-link" target="_blank"><span class="icon">📄</span> test_results.html <span class="file">test_results.html</span></a>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> <span class="code">tests/test_api.py</span> with <strong>16 tests</strong> all passing</li>
+        <li><span class="check">✅</span> Covers: health, /ask, /feedback, error handling, SPA serving</li>
+      </ul>
+    </div>
+
+    <!-- Task 6 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 6</span>
+        <span class="task-title">Prompt Engineering</span>
+        <span class="status-badge status-done">✅ DONE</span>
+      </div>
+      <div class="screenshot-list">
+        <a href="prompt_comparison.html" class="screenshot-link" target="_blank"><span class="icon">📄</span> prompt_comparison.html <span class="file">prompt_comparison.html</span></a>
+        <a href="03_ask_response.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> improved response <span class="file">03_ask_response.png</span></a>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> Original prompt documented: <span class="code">{question}</span> (no system context)</li>
+        <li><span class="check">✅</span> Improved prompt: system instruction + RAG context + conversation history</li>
+        <li><span class="check">✅</span> Before/after response comparison in <span class="code">prompt_comparison.html</span></li>
+        <li><span class="check">✅</span> Code-side formatting strategy for 5-section responses</li>
+      </ul>
+    </div>
+
+    <!-- Task 7 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 7</span>
+        <span class="task-title">Error Handling</span>
+        <span class="status-badge status-done">✅ DONE</span>
+      </div>
+      <div class="screenshot-list">
+        <a href="05_error_empty_question.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> empty Q error <span class="file">05_error_empty_question.png</span></a>
+        <a href="06_error_handling_summary.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> error summary <span class="file">06_error_handling_summary.png</span></a>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> <strong>Backend down:</strong> Frontend shows "❌ Network Error: Could not reach the API backend server."</li>
+        <li><span class="check">✅</span> <strong>LLM down:</strong> Backend returns HTTP 503 "Local LLM service is currently unavailable"</li>
+        <li><span class="check">✅</span> <strong>Empty question:</strong> <span class="code">alert("Please enter a question.")</span> + Pydantic HTTP 400</li>
+        <li><span class="check">✅</span> <strong>Slow response:</strong> Animated ping loader "Retrieving database records..."</li>
+      </ul>
+    </div>
+
+    <!-- Task 8 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 8</span>
+        <span class="task-title">Logging</span>
+        <span class="status-badge status-done">✅ DONE</span>
+      </div>
+      <div class="screenshot-list">
+        <a href="07_log_file.png" class="screenshot-link" target="_blank"><span class="icon">🖼️</span> log file <span class="file">07_log_file.png</span></a>
+        <a href="log_file.html" class="screenshot-link" target="_blank"><span class="icon">📄</span> log_file.html <span class="file">log_file.html</span></a>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> <span class="code">backend/logs/app.log</span> — records questions, answers, errors, timestamps</li>
+        <li><span class="check">✅</span> <span class="code">backend/logs/feedback.log</span> — records Good/Average/Poor ratings</li>
+        <li><span class="check">✅</span> Each entry includes: timestamp, logger name, log level, structured message</li>
+      </ul>
+    </div>
+
+    <!-- Task 9 -->
+    <div class="task-card">
+      <div class="task-header">
+        <span class="task-number">TASK 9</span>
+        <span class="task-title">Industry Production Reflection</span>
+        <span class="status-badge status-done">✅ DONE</span>
+      </div>
+      <ul class="checklist">
+        <li><span class="check">✅</span> All 10 reflection questions answered in report (Section 9)</li>
+        <li><span class="check">✅</span> Covers: components, FastAPI role, LLM role, frontend role, local vs external API, security risks, production improvements, monitoring, data protection, challenges</li>
+      </ul>
+    </div>
+
+    <hr />
+
+    <!-- Bonus Features -->
+    <h2 style="color:#f1f5f9; margin: 1rem 0; display:flex; align-items:center; gap:0.75rem;">⭐ Bonus Features <span class="bonus-tag">3 OPTIONS</span></h2>
+
+    <div class="task-grid">
+      <div class="task-card" style="border-color: #10b981;">
+        <div class="task-header">
+          <span class="bonus-tag">OPTION B</span>
+          <span class="task-title">Retrieval-Augmented Generation (RAG)</span>
+          <span class="status-badge status-done">✅ DONE</span>
+        </div>
+        <ul class="checklist">
+          <li><span class="check">✅</span> 11 knowledge-base markdown documents</li>
+          <li><span class="check">✅</span> FAQ database (faq.json) — 8 university service categories</li>
+          <li><span class="check">✅</span> FAQ Direct Engine bypasses LLM when confidence ≥ 85%</li>
+          <li><span class="check">✅</span> Keyword overlap scoring + dual retrieval strategy</li>
+        </ul>
+      </div>
+
+      <div class="task-card" style="border-color: #10b981;">
+        <div class="task-header">
+          <span class="bonus-tag">OPTION C</span>
+          <span class="task-title">Docker Containerization</span>
+          <span class="status-badge status-done">✅ DONE</span>
+        </div>
+        <ul class="checklist">
+          <li><span class="check">✅</span> <span class="code">Dockerfile</span> — Python 3.13-slim image with all dependencies</li>
+          <li><span class="check">✅</span> <span class="code">docker-compose.yml</span> — Ollama + setup + backend orchestration</li>
+          <li><span class="check">✅</span> <span class="code">.dockerignore</span> — optimizes build context</li>
+          <li><span class="check">✅</span> Health checks on all services</li>
+        </ul>
+      </div>
+
+      <div class="task-card" style="border-color: #10b981;">
+        <div class="task-header">
+          <span class="bonus-tag">OPTION E</span>
+          <span class="task-title">Response Evaluation</span>
+          <span class="status-badge status-done">✅ DONE</span>
+        </div>
+        <ul class="checklist">
+          <li><span class="check">✅</span> Good / Average / Poor rating buttons on each message</li>
+          <li><span class="check">✅</span> POST /feedback endpoint + feedback.log</li>
+          <li><span class="check">✅</span> Visual confirmation after rating submission</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr />
+
+    <!-- Deliverables -->
+    <h2 style="color:#f1f5f9; margin: 1rem 0;">📦 Final Deliverables</h2>
+
+    <div class="task-card">
+      <ul class="checklist">
+        <li><span class="check">✅</span> Source code in organized project structure</li>
+        <li><span class="check">✅</span> <span class="code">README.md</span> with full setup and running instructions</li>
+        <li><span class="check">✅</span> <span class="code">docs/IS_365_Report.docx</span> — 4-6 page technical report</li>
+        <li><span class="check">✅</span> <span class="code">docs/screenshots/</span> — 12+ screenshots covering all tasks</li>
+        <li><span class="check">✅</span> <span class="code">docs/screenshots/prompt_comparison.html</span> — prompt engineering evidence</li>
+        <li><span class="check">✅</span> Industry Production Reflection (10 questions answered)</li>
+      </ul>
+      <div class="note">
+        <strong>📋 Remaining steps:</strong> To complete evidence collection, capture these screenshots manually:<br>
+        1. Run <span class="code">ollama pull llama3.2:1b</span> in a terminal and screenshot it<br>
+        2. Run <span class="code">cd backend && python main.py</span> and screenshot the running server<br>
+        3. Open the <span class="code">how_to_capture_screenshots.html</span> guide for detailed instructions
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task 6: Prompt Engineering Comparison</title>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; padding: 2rem; margin: 0; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 1.8rem; color: #f1f5f9; border-bottom: 2px solid #334155; padding-bottom: 0.5rem; }
+    h2 { font-size: 1.3rem; margin-top: 2rem; color: #6CABDD; }
+    h3 { font-size: 1rem; color: #94a3b8; margin: 1.5rem 0 0.5rem; }
+    .prompt-box { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1.2rem; margin: 0.5rem 0 1.5rem; }
+    .prompt-box code { white-space: pre-wrap; word-break: break-word; font-family: 'JetBrains Mono', 'Cascadia Code', monospace; font-size: 0.85rem; line-height: 1.6; color: #cbd5e1; }
+    .response-box { background: #0f172a; border-left: 4px solid; border-radius: 6px; padding: 1rem; margin: 0.5rem 0; }
+    .response-box.original { border-color: #ef4444; background: #1e1b1b; }
+    .response-box.improved { border-color: #10b981; background: #0b1f1a; }
+    .badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.7rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .badge.danger { background: #ef4444; color: white; }
+    .badge.success { background: #10b981; color: white; }
+    .badge.code { background: #6CABDD; color: #0f172a; }
+    .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0; }
+    @media (max-width: 768px) { .comparison-grid { grid-template-columns: 1fr; } }
+    .detail { color: #64748b; font-size: 0.85rem; margin: 0.25rem 0; }
+    .section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #475569; font-weight: 700; margin-bottom: 0.3rem; }
+    hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Task 6: Prompt Engineering Comparison</h1>
+    <p class="detail">IS 365 — Evidence showing the original prompt, improved prompt, and response comparison.</p>
+
+    <!-- ── ORIGINAL PROMPT ── -->
+    <h2>1. Original Prompt (Before)</h2>
+    <p class="detail">The raw student question was sent directly to the LLM without system instructions or context.</p>
+
+    <div class="prompt-box">
+      <span class="badge danger">Original</span>
+      <code>{question}</code>
+    </div>
+
+    <h3>Example: "I want to cheat in my exam, what are the rules?"</h3>
+    <div class="response-box original">
+      <span class="badge danger">Original Response</span>
+      <p style="color: #fca5a5; font-size: 0.9rem;">
+        "Cheating is generally not recommended, but some schools allow open notes or cheat sheets depending on the professor. Here are tips on how to prepare..."
+      </p>
+      <p style="color: #ef4444; font-size: 0.8rem;">⚠️ <strong>Problem:</strong> Potentially dangerous advice — the model hallucinates policy from general training data. May encourage academic dishonesty.</p>
+    </div>
+
+    <hr />
+
+    <!-- ── IMPROVED PROMPT ── -->
+    <h2>2. Improved Prompt (After)</h2>
+    <p class="detail">System instruction with RAG context injection — the model is constrained to answer only from official UDSM documents.</p>
+
+    <div class="prompt-box">
+      <span class="badge success">Improved</span>
+      <code>You are the UDSM Student Support Assistant. Answer based only on the official UDSM information below. Never invent policies or fees.
+
+Official UDSM information:
+{retrieved KB context}
+
+Student question: {question}</code>
+    </div>
+
+    <h3>Example: "I want to cheat in my exam, what are the rules?"</h3>
+    <div class="response-box improved">
+      <span class="badge success">Improved Response</span>
+      <p style="color: #86efac; font-size: 0.9rem;">
+        "Possession of unauthorized materials or cheating is strictly treated as academic dishonesty under the university examination rules, leading to immediate disciplinary action, suspension, or expulsion. Please refer to the Dean of Students' office for code of conduct details."
+      </p>
+      <p style="color: #10b981; font-size: 0.8rem;">✅ <strong>Improvement:</strong> Response is grounded in official policies, provides accurate directives, and includes referral to the correct authority.</p>
+    </div>
+
+    <hr />
+
+    <!-- ── SIDE-BY-SIDE ── -->
+    <h2>3. Side-by-Side Comparison</h2>
+
+    <div class="comparison-grid">
+      <div>
+        <h3 style="color: #ef4444; margin-top: 0;">❌ Before (Original)</h3>
+        <div class="prompt-box" style="margin-top: 0;">
+          <span class="badge code">Code</span>
+          <code style="font-size: 0.75rem;"># Before: no system prompt
+prompt = question
+
+response = llm.query(prompt)</code>
+        </div>
+        <div class="response-box original" style="margin-top: 0.5rem;">
+          <p style="color: #fca5a5; font-size: 0.85rem;">
+            <strong>Question:</strong> "How much are tuition fees?"<br />
+            <strong>Answer:</strong> "Tuition fees vary by country and university. In Tanzania, many public universities charge between Tsh 500,000 and Tsh 2,000,000 per year..."
+          </p>
+          <p style="color: #ef4444; font-size: 0.75rem;">❌ Hallucinated — generic answer, no source verification, invented fee ranges.</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 style="color: #10b981; margin-top: 0;">✅ After (Improved)</h3>
+        <div class="prompt-box" style="margin-top: 0;">
+          <span class="badge code">Code</span>
+          <code style="font-size: 0.75rem;"># After: system prompt + RAG context
+system = "Answer based only on official UDSM info."
+prompt = system + context + question
+
+response = llm.query(prompt)
+# Then format: _format_structured_response()</code>
+        </div>
+        <div class="response-box improved" style="margin-top: 0.5rem;">
+          <p style="color: #86efac; font-size: 0.85rem;">
+            <strong>Question:</strong> "How much are tuition fees?"<br />
+            <strong>Answer:</strong> "Tuition fees for the 2024/2025 academic year are Tsh 1,200,000 per semester for undergraduate programmes. Please refer to the official UDSM fee structure at the student portal for programme-specific costs."
+          </p>
+          <p style="color: #10b981; font-size: 0.75rem;">✅ Accurate — sourced from retrieved fee-structure.md document.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr />
+
+    <!-- ── ADDITIONAL TECHNIQUES ── -->
+    <h2>4. Additional Prompt Engineering Techniques</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+      <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1rem;">
+        <h3 style="margin-top: 0; color: #6CABDD;">🧠 FAQ Direct Engine</h3>
+        <p style="font-size: 0.85rem; color: #94a3b8;">Sub-second responses for known questions — bypasses the LLM entirely when FAQ confidence >= 85%.</p>
+        <div style="background: #0f172a; padding: 0.5rem; border-radius: 4px; font-size: 0.75rem; font-family: monospace; color: #cbd5e1;">
+          # FAQ match score > 0.85 → return FAQ answer directly<br />
+          if faq_confidence >= 0.85:<br />
+          &nbsp;&nbsp;return faq_answer  # No LLM call
+        </div>
+      </div>
+
+      <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1rem;">
+        <h3 style="margin-top: 0; color: #6CABDD;">📐 Code-Side Formatting</h3>
+        <p style="font-size: 0.85rem; color: #94a3b8;">The 1B model struggled with formatting instructions. Solution: keep LLM prompt minimal, format in Python.</p>
+        <div style="background: #0f172a; padding: 0.5rem; border-radius: 4px; font-size: 0.75rem; font-family: monospace; color: #cbd5e1;">
+          # LLM generates natural text only<br />
+          # Python adds 5-section structure:<br />
+          _format_structured_response()<br />
+          &nbsp;&nbsp;→ Answer section<br />
+          &nbsp;&nbsp;→ Steps section<br />
+          &nbsp;&nbsp;→ Useful Links<br />
+          &nbsp;&nbsp;→ Sources<br />
+          &nbsp;&nbsp;→ Confidence
+        </div>
+      </div>
+    </div>
+
+    <hr />
+
+    <!-- ── IMPACT SUMMARY ── -->
+    <h2>5. Impact Summary</h2>
+    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+      <thead>
+        <tr style="background: #1e293b; border-bottom: 2px solid #334155;">
+          <th style="padding: 0.75rem; text-align: left; color: #94a3b8;">Metric</th>
+          <th style="padding: 0.75rem; text-align: left; color: #ef4444;">Before (Original)</th>
+          <th style="padding: 0.75rem; text-align: left; color: #10b981;">After (Improved)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 0.75rem; font-weight: 600;">Response Source</td>
+          <td style="padding: 0.75rem;">General LLM training data (unreliable)</td>
+          <td style="padding: 0.75rem;">Official UDSM documents only</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 0.75rem; font-weight: 600;">Hallucination Rate</td>
+          <td style="padding: 0.75rem;">High — invents policies, fees, dates</td>
+          <td style="padding: 0.75rem;">Low — constrained by RAG context</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 0.75rem; font-weight: 600;">Format Consistency</td>
+          <td style="padding: 0.75rem;">Unpredictable free-form text</td>
+          <td style="padding: 0.75rem;">Guaranteed 5-section structure</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #1e293b;">
+          <td style="padding: 0.75rem; font-weight: 600;">Response Time (FAQ)</td>
+          <td style="padding: 0.75rem;">5-20s (LLM generation)</td>
+          <td style="padding: 0.75rem;">&lt;1s (FAQ Direct Engine bypass)</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.75rem; font-weight: 600;">Confidence Score</td>
+          <td style="padding: 0.75rem;">Not available</td>
+          <td style="padding: 0.75rem;">High/Medium/Low with 0.0-1.0 score</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

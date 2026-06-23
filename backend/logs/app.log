@@ -4013,3 +4013,250 @@ Student question: how to apply hostel
 2026-06-23 12:50:52,098 [INFO] llm_client - Loaded knowledge document: Library Services
 2026-06-23 12:50:52,099 [INFO] llm_client - Loaded knowledge document: Registration Procedures
 2026-06-23 12:50:52,101 [INFO] llm_client - Loaded knowledge document: Student Handbook
+2026-06-23 12:51:44,295 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 12:52:44,287 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 12:53:43,985 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 12:54:44,287 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 12:55:43,983 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 12:56:44,316 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 12:57:43,981 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 12:58:44,295 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 12:59:43,981 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:00:44,306 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:01:30,248 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:01:37,122 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:01:45,894 [INFO] student_support_backend - Received question: 'hello'
+2026-06-23 13:01:45,895 [INFO] llm_client - Sending request to Ollama (llama3.2:1b)
+2026-06-23 13:01:55,761 [INFO] student_support_backend - Successfully generated answer. Duration: 9.87s. RAG: False, Category: General
+2026-06-23 13:01:55,761 [INFO] student_support_backend - [INTERACTION]
+Timestamp: 2026-06-23T13:01:45.894422
+Question: hello
+Answer: Answer:
+I'm here to help with any questions you may have about studying at University of Dammann (UDSM) in South Africa. What's on your mind?
+
+What you should do:
+1. Visit the UDSM portal at https://portal.udsm.ac.tz for detailed guidance.
+2. Contact the relevant UDSM directorate for further assistance.
+
+Useful Links:
+* Official UDSM Website: https://udsm.ac.tz
+* Student Services: https://udsm.ac.tz/directorate-students-services
+* Policies and Guidelines: https://www.udsm.ac.tz/node/1579
+* ARIS System: https://aris3.udsm.ac.tz
+* Admissions Portal: https://udsm.admission.ac.tz
+
+Sources:
+No specific documents cited.
+
+
+Prompt Used: You are the UDSM Student Support Assistant. Answer based only on the official UDSM information below. Never invent policies or fees.
+
+Student question: hello
+----------------------------------------
+2026-06-23 13:01:55,767 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:01:59,825 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:02:06,816 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:02:17,133 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:02:26,615 [INFO] student_support_backend - Received question: 'how to apply hostel'
+2026-06-23 13:02:26,617 [INFO] llm_client - Sending request to Ollama (llama3.2:1b)
+2026-06-23 13:02:46,622 [INFO] student_support_backend - Successfully generated answer. Duration: 20.01s. RAG: True, Category: hostel application
+2026-06-23 13:02:46,623 [INFO] student_support_backend - [INTERACTION]
+Timestamp: 2026-06-23T13:02:26.615959
+Question: how to apply hostel
+Answer: Answer:
+To apply for on-campus hostel accommodation at UDSM, you need to follow these steps:
+
+1. Check the Student Portal one month before the semester starts.
+2. Pay a non-refundable application fee.
+3. Select your preferred hostel block (Hall 1 or Hall 2).
+4. Upload your proof of payment.
+
+After applying and paying the fee, results will be published on the portal two weeks before classes commence.
+
+What you should do:
+1. To apply for on-campus hostel accommodation at UDSM, you need to follow these steps:
+
+1.
+2. Check the Student Portal one month before the semester starts.
+3. Pay a non-refundable application fee.
+4. Select your preferred hostel block (Hall 1 or Hall 2).
+5. Upload your proof of payment.
+
+Useful Links:
+* Official UDSM Website: https://udsm.ac.tz
+* Student Services: https://udsm.ac.tz/directorate-students-services
+* Policies and Guidelines: https://www.udsm.ac.tz/node/1579
+* ARIS System: https://aris3.udsm.ac.tz
+* Admissions Portal: https://udsm.admission.ac.tz
+
+Sources:
+- UDSM FAQ - Hostel Application
+- Registration Procedures
+- Ict Policies
+- Hostel Guidelines
+
+
+Prompt Used: You are the UDSM Student Support Assistant. Answer based only on the official UDSM information below. Never invent policies or fees.
+
+### Recent Conversation History:
+Student: hello
+Assistant: Answer:
+
+Official UDSM information:
+[FAQ - HOSTEL APPLICATION]
+Q: How do I apply for on-campus hostel accommodation?
+A: On-campus hostel accommodation is allocated on a first-come, first-served basis, with priority given to first-year undergraduate and international students. Applications open online on the Student Portal one month before the semester starts. You must pay a non-refundable application fee first, select your preferred hostel block, and upload your proof of payment. Results are published on the portal two weeks before classes commence.
+
+[Registration Procedures - Transfer and Interruption]
+Transfer and Interruption
+- Transfer between programmes: Apply to Academic Registrar, requires minimum CGPA of 2.5
+- Interruption of studies: Maximum 2 semesters, apply to Dean of School
+- Readmission: Required if interruption exceeds 2 semesters
+- Transfer from other universities: Credit transfer evaluated by the relevant School Board
+
+[Ict Policies - Portal Access]
+Portal Access
+- URL: https://portal.udsm.ac.tz
+- Services: Course registration, fee checking, exam results, hostel application
+- Password reset: Via ICT Help Desk or self-service security questions
+
+[Hostel Guidelines - Hostel Blocks]
+Hostel Blocks
+- **Hall 1** (Mlimani): First-year students, 4-person rooms
+- **Hall 2** (Nkrumah): Second-year students, 2-person rooms  
+- **Hall 3** (Nyerere): Senior students, single and 2-person rooms
+- **Hall 4** (Kambarage): Postgraduate students, single rooms
+- **Hall 5** (UDSM Tower): International students, single rooms with en-suite
+
+Student question: how to apply hostel
+----------------------------------------
+2026-06-23 13:02:46,628 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:02:50,994 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:02:55,051 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:02:59,081 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:03:06,819 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:03:17,133 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:03:26,979 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:03:37,298 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:03:46,976 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:03:57,299 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:04:06,818 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:04:17,133 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:04:26,985 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:04:37,290 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:04:46,986 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:04:57,299 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:05:07,039 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:05:17,290 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:05:26,987 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:05:37,287 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:05:46,986 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:05:57,295 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:06:06,974 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:06:17,292 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:06:44,000 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:06:48,157 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:06:56,983 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:07:07,300 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:07:16,988 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:07:27,299 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:07:36,974 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:07:47,297 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:08:43,985 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:09:44,293 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:10:43,981 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:11:44,292 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:12:43,983 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:13:44,308 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:14:43,980 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:15:44,291 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:16:44,072 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:17:44,292 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:18:43,983 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:19:11,295 [INFO] llm_client - Loaded knowledge document: Academic Calendar
+2026-06-23 13:19:11,296 [INFO] llm_client - Loaded knowledge document: Academic Regulations
+2026-06-23 13:19:11,297 [INFO] llm_client - Loaded knowledge document: Examination Rules
+2026-06-23 13:19:11,297 [INFO] llm_client - Loaded knowledge document: Faculty Information
+2026-06-23 13:19:11,298 [INFO] llm_client - Loaded knowledge document: Fee Structure
+2026-06-23 13:19:11,298 [INFO] llm_client - Loaded knowledge document: Graduation Requirements
+2026-06-23 13:19:11,299 [INFO] llm_client - Loaded knowledge document: Hostel Guidelines
+2026-06-23 13:19:11,299 [INFO] llm_client - Loaded knowledge document: Ict Policies
+2026-06-23 13:19:11,300 [INFO] llm_client - Loaded knowledge document: Library Services
+2026-06-23 13:19:11,301 [INFO] llm_client - Loaded knowledge document: Registration Procedures
+2026-06-23 13:19:11,301 [INFO] llm_client - Loaded knowledge document: Student Handbook
+2026-06-23 13:19:11,555 [INFO] llm_client - Loaded knowledge document: Academic Calendar
+2026-06-23 13:19:11,556 [INFO] llm_client - Loaded knowledge document: Academic Regulations
+2026-06-23 13:19:11,556 [INFO] llm_client - Loaded knowledge document: Examination Rules
+2026-06-23 13:19:11,558 [INFO] llm_client - Loaded knowledge document: Faculty Information
+2026-06-23 13:19:11,558 [INFO] llm_client - Loaded knowledge document: Fee Structure
+2026-06-23 13:19:11,559 [INFO] llm_client - Loaded knowledge document: Graduation Requirements
+2026-06-23 13:19:11,560 [INFO] llm_client - Loaded knowledge document: Hostel Guidelines
+2026-06-23 13:19:11,561 [INFO] llm_client - Loaded knowledge document: Ict Policies
+2026-06-23 13:19:11,561 [INFO] llm_client - Loaded knowledge document: Library Services
+2026-06-23 13:19:11,562 [INFO] llm_client - Loaded knowledge document: Registration Procedures
+2026-06-23 13:19:11,563 [INFO] llm_client - Loaded knowledge document: Student Handbook
+2026-06-23 13:19:44,287 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:20:44,289 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:21:44,015 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:22:44,284 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:23:43,980 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:24:44,293 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:25:43,981 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:26:44,323 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:27:43,980 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:28:44,290 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:29:43,976 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:30:44,293 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:31:43,975 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:32:44,287 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:33:43,982 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:34:03,335 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:34:07,360 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:34:17,322 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:34:26,985 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:34:37,296 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:34:46,978 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:34:57,360 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:35:07,287 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:35:16,975 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:35:27,296 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:35:36,983 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:35:47,300 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:35:56,987 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:36:44,334 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:37:43,986 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:38:44,293 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:39:23,029 [INFO] llm_client - Loaded knowledge document: Academic Calendar
+2026-06-23 13:39:23,030 [INFO] llm_client - Loaded knowledge document: Academic Regulations
+2026-06-23 13:39:23,031 [INFO] llm_client - Loaded knowledge document: Examination Rules
+2026-06-23 13:39:23,031 [INFO] llm_client - Loaded knowledge document: Faculty Information
+2026-06-23 13:39:23,032 [INFO] llm_client - Loaded knowledge document: Fee Structure
+2026-06-23 13:39:23,033 [INFO] llm_client - Loaded knowledge document: Graduation Requirements
+2026-06-23 13:39:23,033 [INFO] llm_client - Loaded knowledge document: Hostel Guidelines
+2026-06-23 13:39:23,034 [INFO] llm_client - Loaded knowledge document: Ict Policies
+2026-06-23 13:39:23,035 [INFO] llm_client - Loaded knowledge document: Library Services
+2026-06-23 13:39:23,035 [INFO] llm_client - Loaded knowledge document: Registration Procedures
+2026-06-23 13:39:23,036 [INFO] llm_client - Loaded knowledge document: Student Handbook
+2026-06-23 13:39:23,299 [INFO] llm_client - Loaded knowledge document: Academic Calendar
+2026-06-23 13:39:23,300 [INFO] llm_client - Loaded knowledge document: Academic Regulations
+2026-06-23 13:39:23,301 [INFO] llm_client - Loaded knowledge document: Examination Rules
+2026-06-23 13:39:23,301 [INFO] llm_client - Loaded knowledge document: Faculty Information
+2026-06-23 13:39:23,302 [INFO] llm_client - Loaded knowledge document: Fee Structure
+2026-06-23 13:39:23,303 [INFO] llm_client - Loaded knowledge document: Graduation Requirements
+2026-06-23 13:39:23,303 [INFO] llm_client - Loaded knowledge document: Hostel Guidelines
+2026-06-23 13:39:23,304 [INFO] llm_client - Loaded knowledge document: Ict Policies
+2026-06-23 13:39:23,304 [INFO] llm_client - Loaded knowledge document: Library Services
+2026-06-23 13:39:23,305 [INFO] llm_client - Loaded knowledge document: Registration Procedures
+2026-06-23 13:39:23,305 [INFO] llm_client - Loaded knowledge document: Student Handbook
+2026-06-23 13:39:44,285 [INFO] student_support_backend - Health check endpoint called.
+2026-06-23 13:40:23,541 [INFO] llm_client - Loaded knowledge document: Academic Calendar
+2026-06-23 13:40:23,542 [INFO] llm_client - Loaded knowledge document: Academic Regulations
+2026-06-23 13:40:23,543 [INFO] llm_client - Loaded knowledge document: Examination Rules
+2026-06-23 13:40:23,543 [INFO] llm_client - Loaded knowledge document: Faculty Information
+2026-06-23 13:40:23,544 [INFO] llm_client - Loaded knowledge document: Fee Structure
+2026-06-23 13:40:23,544 [INFO] llm_client - Loaded knowledge document: Graduation Requirements
+2026-06-23 13:40:23,545 [INFO] llm_client - Loaded knowledge document: Hostel Guidelines
+2026-06-23 13:40:23,546 [INFO] llm_client - Loaded knowledge document: Ict Policies
+2026-06-23 13:40:23,546 [INFO] llm_client - Loaded knowledge document: Library Services
+2026-06-23 13:40:23,547 [INFO] llm_client - Loaded knowledge document: Registration Procedures
+2026-06-23 13:40:23,548 [INFO] llm_client - Loaded knowledge document: Student Handbook

@@ -1,0 +1,83 @@
+# =============================================================================
+# IS 365 - Docker Compose: Ollama LLM + FastAPI Backend
+#
+# Prerequisites: Docker Desktop with WSL2 backend
+#
+# Start both services:   docker-compose up -d
+# Stop both services:    docker-compose down
+# View logs:             docker-compose logs -f
+# =============================================================================
+
+version: "3.9"
+
+services:
+
+  # ── Ollama LLM Server ──────────────────────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-llm
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 8g
+          cpus: "4"
+
+  # ── Pull the model on startup ───────────────────────────────────────
+  ollama-setup:
+    image: ollama/ollama:latest
+    container_name: ollama-setup
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      echo "Waiting for Ollama server..." && \
+      sleep 3 && \
+      echo "Pulling llama3.2:1b..." && \
+      ollama pull llama3.2:1b && \
+      echo "Model pulled successfully!"
+
+  # ── FastAPI Backend ─────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: udsm-llm-backend
+    restart: unless-stopped
+    depends_on:
+      ollama-setup:
+        condition: service_completed_successfully
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_API_URL=http://ollama:11434/api/generate
+      - MODEL_NAME=llama3.2:1b
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+    volumes:
+      - ./backend/logs:/app/backend/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  ollama_data:
+    driver: local

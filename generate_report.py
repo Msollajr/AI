@@ -3,6 +3,7 @@ from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
+from pathlib import Path
 import datetime
 
 doc = Document()
@@ -50,6 +51,27 @@ def add_table_row(table, cells_text, bold=False):
         if bold:
             p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     return row
+
+def add_screenshot(doc, filename, caption, width=Inches(4.5)):
+    """Add a screenshot image to the document with centered caption if the file exists."""
+    screenshots_dir = Path('docs/screenshots')
+    img_path = screenshots_dir / filename
+    if img_path.exists():
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = p.add_run()
+        run.add_picture(str(img_path), width=width)
+        # Add italic caption below image
+        p2 = doc.add_paragraph()
+        p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p2.paragraph_format.space_before = Pt(0)
+        p2.paragraph_format.space_after = Pt(6)
+        run2 = p2.add_run(caption)
+        run2.font.size = Pt(8)
+        run2.font.color.rgb = RGBColor(0x66, 0x66, 0x66)
+        run2.italic = True
+    else:
+        print(f"  [WARN] Screenshot not found: docs/screenshots/{filename}")
 
 def add_diagram_block(doc, text, caption=None):
     if caption:
@@ -226,6 +248,7 @@ tools_data = [
     ('Model', 'llama3.2:1b', '1B parameter model for low-latency local execution.'),
     ('Frontend', 'Tailwind CSS SPA + Streamlit', 'Production SPA + Streamlit wrapper on port 8501.'),
     ('Testing Suite', 'Pytest & TestClient', 'Unit testing with FastAPI TestClient.'),
+    ('Containerization', 'Docker & Docker Compose', 'Option C bonus: containerized backend with Ollama orchestration.'),
 ]
 for comp, tool, justification in tools_data:
     add_table_row(table, [comp, tool, justification])
@@ -342,12 +365,26 @@ packages = [
 for pkg, purpose in packages:
     add_table_row(reqs_table, [pkg, purpose])
 
+# Screenshots for Task 1: Environment Setup
+p = doc.add_paragraph('Environment Setup Screenshots:')
+p.runs[0].font.size = Pt(10)
+p.runs[0].bold = True
+add_screenshot(doc, '09_venv_activated.png', 'Figure 2: Activated virtual environment in PowerShell showing Python version and activation prompt.')
+add_screenshot(doc, '10_pip_list.png', 'Figure 3: Installed Python packages via pip list showing all required dependencies.')
+
 # 5.2
 doc.add_heading('5.2 Task 2: Local LLM Setup', level=2)
 doc.add_paragraph('Ollama was installed and configured to serve the llama3.2:1b model locally:')
 add_bullet(doc, 'ollama pull llama3.2:1b — pulled the 1.3B parameter model (Q8_0 quantization).', 'Command: ')
 add_bullet(doc, 'ollama run llama3.2:1b — verified the model responds to prompts.', 'Command: ')
 add_bullet(doc, 'The Ollama REST API is available at http://localhost:11434/api/generate.', 'Verified: ')
+
+# Screenshots for Task 2: Local LLM Setup
+p = doc.add_paragraph('Ollama Setup Screenshots:')
+p.runs[0].font.size = Pt(10)
+p.runs[0].bold = True
+add_screenshot(doc, '11_ollama_running.png', 'Figure 4: Ollama server running with llama3.2:1b model loaded and ready.')
+add_screenshot(doc, '02_health_response.png', 'Figure 5: Health check API response showing LLM connected status and system readiness.')
 
 # 5.3
 doc.add_heading('5.3 Task 3: Backend Development', level=2)
@@ -400,6 +437,13 @@ endpoints = [
 for method, path, desc in endpoints:
     add_table_row(endpoints_table, [method, path, desc])
 
+# Screenshots for Task 3: Backend Development
+p = doc.add_paragraph('Backend API Screenshots:')
+p.runs[0].font.size = Pt(10)
+p.runs[0].bold = True
+add_screenshot(doc, '01_swagger_docs.png', 'Figure 6: FastAPI Swagger UI at /docs showing all four API endpoints with request/response schemas.')
+add_screenshot(doc, '03_ask_response.png', 'Figure 7: POST /ask API response showing structured answer with RAG context, sources, and confidence score.')
+
 doc.add_paragraph()
 doc.add_paragraph(
     'The /ask endpoint returns an AskResponse model with the following fields: answer, '
@@ -425,6 +469,13 @@ add_bullet(doc, 'Citations sidebar panel showing retrieved category and sources.
 add_bullet(doc, 'Dashboard tab with mock student information cards (registration status, hostel allocation, fee status).', 'Dashboard: ')
 add_bullet(doc, 'Mobile-first responsive design with sidebar overlay navigation on small screens, adaptive typography, and touch-friendly interaction targets.', 'Responsive: ')
 
+# Screenshots for Task 4: Frontend Development
+p = doc.add_paragraph('Frontend Screenshots:')
+p.runs[0].font.size = Pt(10)
+p.runs[0].bold = True
+add_screenshot(doc, '04_frontend.png', 'Figure 8: Frontend chat interface showing the welcome splash screen with suggestion cards and sidebar navigation.')
+add_screenshot(doc, '12_frontend_qa.png', 'Figure 9: Question-and-answer interaction between student and UDSM AI Assistant with structured response.')
+
 doc.add_heading('Streamlit Wrapper (app.py)', level=3)
 doc.add_paragraph(
     'A thin 46-line Streamlit application that embeds the SPA in a full-viewport iframe. This '
@@ -449,6 +500,12 @@ test_classes = [
 ]
 for bold_part, text in test_classes:
     add_bullet(doc, text, bold_prefix=bold_part)
+
+# Screenshot for Task 5: Testing
+p = doc.add_paragraph('Test Results Screenshot:')
+p.runs[0].font.size = Pt(10)
+p.runs[0].bold = True
+add_screenshot(doc, '08_test_results.png', 'Figure 10: Pytest test results showing all 16 tests passing with detailed test case names and durations.')
 
 # 5.6
 doc.add_heading('5.6 Task 6: Prompt Engineering', level=2)
@@ -482,6 +539,13 @@ if context:
 sections.append(f"Student question: {question}")
 prompt = "\\n\\n".join(sections)''')
 
+# Note: Full prompt comparison with before/after responses is available in docs/screenshots/prompt_comparison.html
+doc.add_paragraph(
+    'Note: A detailed HTML-based prompt comparison showing original vs improved prompts and '
+    'side-by-side response comparisons is available in the evidence package at '
+    'docs/screenshots/prompt_comparison.html (see Appendix B for code comparison).'
+)
+
 # 5.7
 doc.add_heading('5.7 Task 7: Error Handling', level=2)
 doc.add_paragraph('The system handles four error situations as specified in the assignment:')
@@ -506,6 +570,13 @@ errors = [
 ]
 for sit, exp, impl in errors:
     add_table_row(err_table, [sit, exp, impl])
+
+# Screenshots for Task 7: Error Handling
+p = doc.add_paragraph('Error Handling Screenshots:')
+p.runs[0].font.size = Pt(10)
+p.runs[0].bold = True
+add_screenshot(doc, '05_error_empty_question.png', 'Figure 11: Empty question error handling — frontend raises alert and backend returns HTTP 400.')
+add_screenshot(doc, '06_error_handling_summary.png', 'Figure 12: Error handling summary showing backend-down, LLM-down, and slow-response scenarios.')
 
 doc.add_page_break()
 
@@ -539,6 +610,12 @@ add_code_block(doc, '''# Sample log entry
 2026-06-21 00:48:17,513 [INFO] llm_client - Sending request to Ollama (llama3.2:1b)
 2026-06-21 00:49:04,538 [ERROR] llm_client - Failed to connect to Ollama: Read timed out.
 2026-06-21 00:53:42,848 [INFO] student_support_backend - Health check endpoint called.''')
+
+# Screenshot for Task 8: Logging
+p = doc.add_paragraph('Log File Screenshot:')
+p.runs[0].font.size = Pt(10)
+p.runs[0].bold = True
+add_screenshot(doc, '07_log_file.png', 'Figure 13: Application log file extract showing timestamped entries for received questions, generated answers, and system events.')
 
 doc.add_page_break()
 
@@ -637,6 +714,13 @@ add_bullet(doc, 'User rating buttons (Good / Average / Poor) on each assistant m
 add_bullet(doc, 'Submissions sent via POST /feedback endpoint.', 'API: ')
 add_bullet(doc, 'All feedback logged to backend/logs/feedback.log with question, answer, and rating.', 'Logging: ')
 add_bullet(doc, 'Visual confirmation displayed after rating submission.', 'Confirmation: ')
+
+doc.add_heading('Option C: Docker Containerization', level=2)
+add_bullet(doc, 'Dockerfile packages the FastAPI backend in a Python 3.13-slim image with all dependencies.', 'Dockerfile: ')
+add_bullet(doc, 'docker-compose.yml orchestrates three services: Ollama (LLM server), ollama-setup (model pull), and the FastAPI backend.', 'Docker Compose: ')
+add_bullet(doc, '.dockerignore excludes unnecessary files (venv, logs, tests, docs) from the build context.', 'Optimization: ')
+add_bullet(doc, 'Health checks ensure services are running before accepting traffic.', 'Health Checks: ')
+add_bullet(doc, 'Shared volume (ollama_data) persists model data across container restarts.', 'Volume Persistence: ')
 
 doc.add_page_break()
 
@@ -773,6 +857,9 @@ add_code_block(doc, '''student-support-llm/
 │   └── report.md            # Technical report source
 ├── requirements.txt         # Python dependencies
 ├── README.md                # Setup and operations guide
+├── Dockerfile              # Container image (Option C)
+├── docker-compose.yml      # Orchestrates Ollama + Backend (Option C)
+├── .dockerignore           # Excludes files from Docker build
 └── generate_report.py       # Word document generator''')
 
 doc.add_page_break()

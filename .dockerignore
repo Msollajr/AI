@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+.gitignore
+.gitattributes
+backend/logs/
+docs/
+tests/
+.env
+.env.*
+*.ps1
+*.bat
