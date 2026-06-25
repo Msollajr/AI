@@ -1,0 +1,41 @@
+# source-urls.txt
+# ----------------
+# Add UDSM website links here, one per line.
+# Lines starting with # are comments and are ignored.
+# Blank lines are also ignored.
+#
+# HOW TO USE:
+#   python backend/ingest_urls.py               # scrape all URLs in this file
+#   python backend/ingest_urls.py --force       # re-scrape even if already indexed
+#   python backend/ingest_urls.py --url "https://example.com/page"   # single URL
+#
+# ─────────────────────────────────────────────
+# UDSM Official Website Pages
+# ─────────────────────────────────────────────
+
+# Main UDSM website
+https://www.udsm.ac.tz
+
+# Admissions
+https://www.udsm.ac.tz/index.php/admissions
+
+# Academic programmes
+https://www.udsm.ac.tz/index.php/academics/programmes
+
+# Colleges and Schools
+https://www.udsm.ac.tz/index.php/academics/colleges-and-schools
+
+# Student life
+https://www.udsm.ac.tz/index.php/student-life
+
+# Library
+https://library.udsm.ac.tz
+
+# CoICT
+https://www.coict.udsm.ac.tz
+
+# CoET
+https://www.coet.udsm.ac.tz
+
+# HESLB (student loans)
+https://www.heslb.go.tz/index.php/en/
