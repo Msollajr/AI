@@ -2,51 +2,124 @@
   "university_faqs": [
     {
       "category": "course registration",
-      "keywords": ["register", "add", "drop", "course", "registration", "enrolment", "enroll"],
+      "keywords": ["register", "add", "drop", "course", "registration", "enrolment", "enroll", "subject", "unit"],
       "question": "How do I register for courses?",
-      "answer": "Course registration is done online via the Student Portal during the first two weeks of the semester. To register: log in to your portal, navigate to 'Course Registration', select your required and elective courses based on your curriculum sheet, and click 'Submit'. You must consult your Academic Advisor before finalizing. The deadline for adding or dropping courses is the Friday of the second week of lectures."
+      "answer": "Course registration is done online via the Student Portal (portal.udsm.ac.tz) during the first two weeks of each semester. Steps: (1) Log in to the portal. (2) Clear any outstanding fees from the previous semester. (3) Pay at least 60% of the current semester fees. (4) Click 'Course Registration' and select your courses based on your curriculum sheet. (5) Consult your Academic Advisor before submitting. (6) Click Submit and print your registration slip. The deadline for adding or dropping courses is Friday of Week 2 (September 19 for Semester 1; February 20 for Semester 2)."
     },
     {
       "category": "examination rules",
-      "keywords": ["exam", "examination", "rules", "cheating", "grade", "gpa", "supp", "supplementary"],
+      "keywords": ["exam", "examination", "rules", "cheating", "grade", "gpa", "supp", "supplementary", "invigilation"],
       "question": "What are the rules regarding examinations and grading?",
-      "answer": "1. Students must bring their valid Student ID card to all exam rooms.\n2. No mobile phones, smartwatches, or unauthorized materials are allowed inside the exam hall. Possession of such items is treated as academic dishonesty.\n3. Students arriving more than 30 minutes late will not be admitted.\n4. Grading is based on a letter grade system (A to F). A GPA of 2.0 or above is required to remain in good academic standing. Supplementary examinations are held for students who failed with an 'F' grade but obtained a minimum GPA threshold of 1.5 in the semester."
+      "answer": "1. Students must bring their valid Student ID card to all exam rooms. 2. No mobile phones, smartwatches, or unauthorized materials are allowed inside the exam hall. Possession of such items is treated as academic dishonesty. 3. Students arriving more than 30 minutes late will not be admitted. 4. Grading uses a letter grade system from A (70-100%) to F (0-34%). A CGPA of 2.0 or above is required to remain in good academic standing. 5. Supplementary examinations are available for students who fail with an F grade but obtained a minimum GPA of 1.5 in the semester. 6. Results are published on the student portal within 4 weeks of the last exam."
     },
     {
       "category": "library services",
-      "keywords": ["library", "books", "borrow", "return", "database", "study", "space", "e-resources"],
+      "keywords": ["library", "books", "borrow", "return", "database", "study", "space", "e-resources", "fine", "overdue"],
       "question": "What services does the university library offer and how do I borrow books?",
-      "answer": "The University Main Library is open from 8:00 AM to 10:00 PM on weekdays and 9:00 AM to 5:00 PM on weekends. Students can borrow up to 5 books at a time for a duration of 14 days. Renewals can be made online via the Library OPAC portal twice. The library also provides access to online academic journals, databases, e-resources, and silent study rooms. Fines for overdue books are $0.50 per book per day."
+      "answer": "The University Main Library is open from 8:00 AM to 10:00 PM on weekdays and 9:00 AM to 5:00 PM on weekends. Undergraduate students can borrow up to 5 books for 14 days; postgraduate students up to 10 books for 28 days. Renewals can be made online via the Library OPAC (library.udsm.ac.tz) — maximum 2 renewals per book. The library provides access to JSTOR, ProQuest, ScienceDirect, IEEE, and ACM databases. Fines for overdue books are Tsh 500 per book per day. Unpaid fines block borrowing and may withhold exam results."
     },
     {
       "category": "ICT support",
-      "keywords": ["wifi", "internet", "password", "email", "portal", "ict", "computer", "login", "reset"],
+      "keywords": ["wifi", "internet", "password", "email", "portal", "ict", "computer", "login", "reset", "moodle", "elearning"],
       "question": "How do I connect to campus Wi-Fi or reset my student email password?",
-      "answer": "To connect to the campus Wi-Fi ('UniStudent-WiFi'), select the network on your device, use your student registration number as the username, and enter your portal password. For password resets, portal issues, or student email problems, visit the ICT Support Desk on the ground floor of the Science Building or send an email to support@university.edu. You can also self-reset using the 'Forgot Password' link on the portal page if you set up security questions."
+      "answer": "To connect to campus Wi-Fi: Select 'UniStudent-WiFi', use your student registration number as the username, and enter your portal password. For password resets: click 'Forgot Password' on portal.udsm.ac.tz and answer your security questions, or visit the ICT Help Desk at Science Building Ground Floor Room G.01 with your student ID. For Moodle (Learning Management System): go to elearning.udsm.ac.tz and log in with the same portal credentials. ICT Help Desk: support@udsm.ac.tz | +255 22 2410700."
     },
     {
       "category": "hostel application",
-      "keywords": ["hostel", "accommodation", "room", "housing", "dorm", "residence"],
+      "keywords": ["hostel", "accommodation", "room", "housing", "dorm", "residence", "hall", "apply"],
       "question": "How do I apply for on-campus hostel accommodation?",
-      "answer": "On-campus hostel accommodation is allocated on a first-come, first-served basis, with priority given to first-year undergraduate and international students. Applications open online on the Student Portal one month before the semester starts. You must pay a non-refundable application fee first, select your preferred hostel block, and upload your proof of payment. Results are published on the portal two weeks before classes commence."
+      "answer": "On-campus hostel accommodation is allocated on a first-come, first-served basis, with priority given to first-year undergraduate and international students. Applications open online on the Student Portal one month before the semester starts. Steps: (1) Log in to portal.udsm.ac.tz. (2) Click 'Hostel Application'. (3) Pay the non-refundable Tsh 20,000 application fee. (4) Select your preferred hostel block. (5) Upload proof of payment. Results are published 2 weeks before classes commence. Accepted students must pay hostel fees within 7 days."
     },
     {
       "category": "fee payment",
-      "keywords": ["fees", "payment", "tuition", "bank", "installment", "finance", "invoice", "receipt"],
+      "keywords": ["fees", "payment", "tuition", "bank", "installment", "finance", "invoice", "receipt", "balance", "control number", "gepg", "mpesa"],
       "question": "What are the rules and options for fee payment?",
-      "answer": "Tuition and hostel fees must be paid to the university bank accounts listed on the portal. Payments can be made via bank deposit, online bank transfer, or portal card payment. The university offers a two-installment plan: 60% must be paid prior to registration in week 1, and the remaining 40% must be paid by the 8th week of the semester. Students with outstanding balances will be blocked from accessing examination halls and receiving exam results."
+      "answer": "Fees are paid using a Control Number generated from the Student Portal (portal.udsm.ac.tz → Fee Statement). Payment methods: bank deposit (NMB, CRDB, NBC), mobile money (M-Pesa, Tigo Pesa, Airtel Money via GePG), or portal card payment. Payment plan: pay at least 60% before Week 1 registration, and the remaining 40% by Week 8. Students with outstanding balances will not be allowed to sit for examinations or receive results. Late payment penalty: 5% of outstanding amount per month."
     },
     {
       "category": "academic calendar",
-      "keywords": ["calendar", "semester", "break", "holiday", "dates", "lecture", "exams", "term"],
+      "keywords": ["calendar", "semester", "break", "holiday", "dates", "lecture", "exams", "term", "timetable", "schedule"],
       "question": "Where can I find the academic calendar and key dates?",
-      "answer": "The academic calendar is divided into two semesters. Semester 1 runs from September to January, and Semester 2 runs from February to June. Each semester consists of 12 weeks of lectures, a 1-week mid-semester break, 1 week of study leave, and 2 weeks of examinations. The full academic calendar showing registration dates, holidays, and exam periods is posted on the official university website homepage under 'Resources' -> 'Academic Calendar'."
+      "answer": "The academic year has two semesters: Semester 1 (September–January) and Semester 2 (February–June). Key Semester 1 dates: lectures begin September 8, registration deadline September 19, final exams December 15–24. Key Semester 2 dates: lectures begin February 9, registration deadline February 20, final exams June 1–14. Supplementary exams: July 7–18. The full academic calendar is on the UDSM website (www.udsm.ac.tz) under Resources → Academic Calendar, and on the Student Portal."
     },
     {
       "category": "student conduct",
-      "keywords": ["conduct", "behavior", "disciplinary", "rules", "dress", "code", "harassment", "respect"],
+      "keywords": ["conduct", "behavior", "disciplinary", "rules", "dress", "code", "harassment", "respect", "smoking", "alcohol"],
       "question": "What is the university code of conduct?",
-      "answer": "Students are expected to maintain high standards of discipline, honesty, and respect. Smoking, alcohol consumption, and drug abuse are strictly prohibited on campus. Students must adhere to the university dress code (decent attire). Any form of harassment, fighting, destruction of university property, or academic dishonesty will lead to immediate disciplinary action, which may include suspension or expulsion. Disciplinary hearings are managed by the Dean of Students' office."
+      "answer": "Students are expected to maintain high standards of discipline, honesty, and respect. Smoking, alcohol consumption, and drug abuse are strictly prohibited on campus. Students must adhere to the university dress code (decent attire). Any form of harassment, fighting, destruction of university property, or academic dishonesty will lead to immediate disciplinary action, which may include suspension or expulsion. Disciplinary hearings are managed by the Dean of Students' Office."
+    },
+    {
+      "category": "scholarships and loans",
+      "keywords": ["scholarship", "loan", "heslb", "bursary", "financial aid", "funding", "sponsor", "sponsored", "government loan"],
+      "question": "How do I apply for a HESLB government student loan or scholarship?",
+      "answer": "HESLB (Higher Education Students' Loans Board) provides loans to eligible Tanzanian students. Apply online at www.heslb.go.tz. The application window is usually June–August before Semester 1. Required documents: admission letter, national ID, birth certificate, parent/guardian income proof. Loan covers tuition, accommodation, book allowance, and living expenses depending on the category. Disbursement: tuition paid directly to UDSM; living allowance credited to your bank account. Repayment starts 2 years after graduation at 15% of gross salary. For UDSM internal bursaries, check with the Dean of Students Office."
+    },
+    {
+      "category": "health services",
+      "keywords": ["health", "sick", "hospital", "clinic", "doctor", "medical", "nurse", "emergency", "unwell", "counselling", "mental health"],
+      "question": "Where is the University Health Centre and what services are available?",
+      "answer": "The University Health Centre is located near the Students' Centre, Main Campus. Hours: Monday–Friday 8:00 AM–6:00 PM, Saturday 8:00 AM–1:00 PM, and 24-hour emergency service. Services (free for registered students): general consultation, laboratory tests, pharmacy, maternal health, HIV/VCT testing, dental care, and referrals to Muhimbili National Hospital. For mental health support, the Guidance and Counselling Unit is in the Administration Building, Room G.05 — free and confidential. Email: counselling@udsm.ac.tz | Emergency security: +255 22 2410500."
+    },
+    {
+      "category": "transcript and certificate",
+      "keywords": ["transcript", "certificate", "official", "copy", "academic record", "attestation", "verification"],
+      "question": "How do I request an official academic transcript or certificate?",
+      "answer": "Request an official transcript via the Student Portal (portal.udsm.ac.tz → Academic Records → Transcript Request) or in person at the Academic Registrar's Office. Fee: Tsh 20,000 per copy. Processing time: 2–4 weeks. Collect from the Academic Registrar's Office or request postal delivery (additional fee). For certificate replacement (lost or damaged): Tsh 50,000 — apply in writing to the Academic Registrar with a police abstract. For degree verification letters: Tsh 10,000 per letter."
+    },
+    {
+      "category": "graduation",
+      "keywords": ["graduation", "graduate", "ceremony", "gown", "convocation", "clearance", "degree", "application", "graduate"],
+      "question": "How do I apply for graduation and what are the requirements?",
+      "answer": "To qualify for graduation you must: (1) Complete the minimum required credit units for your programme (120 for 3-year, 160 for 4-year programmes). (2) Achieve minimum CGPA of 2.0 for undergraduate, 3.0 for Master's. (3) Complete all core courses, internship, and final year project/dissertation. (4) Clear all fees, library fines, and hostel obligations. (5) Have no pending disciplinary cases. Application: via portal.udsm.ac.tz during the graduation application period. Graduation fee: Tsh 100,000. Ceremonies held in January and July at Nkrumah Hall."
+    },
+    {
+      "category": "student clubs and sports",
+      "keywords": ["club", "society", "sport", "team", "activity", "join", "extracurricular", "association", "music", "drama", "football", "basketball"],
+      "question": "What student clubs and sports activities can I join at UDSM?",
+      "answer": "UDSM has a vibrant student life with over 30 registered clubs and sports teams. Categories include: Academic clubs (debate, science, law), Cultural clubs (music, drama, art), Sports teams (football, basketball, volleyball, athletics, swimming, chess). To join: visit the Dean of Students Office or the UDASA office in the Students' Centre to get the list of active clubs and contact details. New clubs can be registered with UDASA. The Sports Complex is open daily 6 AM–8 PM. Inter-university competitions (BASU Games) are held annually."
+    },
+    {
+      "category": "grade appeal",
+      "keywords": ["appeal", "review", "grade", "dispute", "wrong grade", "remark", "recheck", "remarking"],
+      "question": "How do I appeal or request a review of my examination grade?",
+      "answer": "Grade review (remarking) requests must be submitted within 14 days of official result publication. Steps: (1) Log in to the Student Portal and locate the course. (2) Submit a Grade Review Request with a written justification. (3) Pay the grade review fee of Tsh 30,000 per course at the Bursar's Office. (4) The Academic Registrar forwards your paper for independent remarking. (5) Results communicated within 4 weeks. If still dissatisfied, submit a formal appeal to the Dean of School within 7 days of receiving the review outcome."
+    },
+    {
+      "category": "internship and attachment",
+      "keywords": ["internship", "attachment", "industrial", "placement", "work experience", "field", "practical training"],
+      "question": "How do I arrange and apply for industrial attachment or internship?",
+      "answer": "Industrial attachment (minimum 8 weeks) is a compulsory graduation requirement for most undergraduate programmes. Steps: (1) Confirm attachment requirement with your programme coordinator — usually done in Year 3 or Year 4. (2) Find a placement through the Career Development Centre (Students' Centre, 1st Floor) or independently. (3) Get a letter of acceptance from the employer. (4) Submit the acceptance letter to your Department for approval. (5) During attachment, complete required logbook entries. (6) Submit the attachment report to your Department after completion. For placement assistance: cdc@udsm.ac.tz."
+    },
+    {
+      "category": "missed examination",
+      "keywords": ["missed", "absent", "miss exam", "sick exam", "did not sit", "special exam", "medical exam"],
+      "question": "What should I do if I missed an examination?",
+      "answer": "If you miss an exam due to illness: submit a valid medical certificate from a registered hospital to the Academic Registrar within 7 days of the missed exam. If due to bereavement: submit the death certificate and a letter from your parents/guardian. If approved, a special examination will be arranged. Unexcused absences result in an automatic grade of F. Do not wait — contact the Academic Registrar's Office (reg@udsm.ac.tz) as soon as possible with your supporting documents."
+    },
+    {
+      "category": "interruption of studies",
+      "keywords": ["defer", "deferment", "interrupt", "suspend studies", "pause studies", "leave of absence", "interruption", "take a break"],
+      "question": "How do I defer or interrupt my studies?",
+      "answer": "A student may interrupt studies for a maximum of 2 consecutive semesters. Steps: (1) Apply in writing to the Dean of your School before end of Week 4 of the semester. (2) Attach supporting documents (medical certificate, financial hardship evidence, etc.). (3) If on HESLB loan, notify HESLB immediately. (4) Await approval from the Dean. (5) Before returning, apply for readmission at the Academic Registrar's Office. Note: interruption beyond 2 semesters requires a formal readmission application."
+    },
+    {
+      "category": "moodle and elearning",
+      "keywords": ["moodle", "elearning", "online", "lms", "course material", "assignment submit", "online class", "elearning platform"],
+      "question": "How do I access Moodle and submit assignments online?",
+      "answer": "Moodle (the university's Learning Management System) is accessed at https://elearning.udsm.ac.tz. Login with your student registration number and portal password. Your registered courses appear automatically within 24 hours of portal registration. Features: download lecture notes, submit assignments, take online quizzes, view grades, and receive lecturer announcements. To submit an assignment: click on the course → click the assignment → Upload your file → click Submit. The Moodle Mobile app is available on Android and iOS for access on your phone. For help: ICT Help Desk at support@udsm.ac.tz."
+    },
+    {
+      "category": "postgraduate admissions",
+      "keywords": ["masters", "phd", "postgraduate", "apply masters", "doctoral", "research degree", "graduate programme", "admission postgraduate"],
+      "question": "How do I apply for a Master's or PhD programme at UDSM?",
+      "answer": "Postgraduate admissions are managed by the Directorate of Postgraduate Studies. Apply online at https://udsm.admission.ac.tz during the published application window (usually February–May for October intake). Requirements for Master's: bachelor's degree with minimum upper second class (CGPA 3.5 or GPA 3.0), two referees, research proposal (for research programmes). Requirements for PhD: master's degree, strong research proposal, identified supervisor at UDSM, two academic referees. Application fee: Tsh 30,000. Contact: pg@udsm.ac.tz | Directorate of Postgraduate Studies, Admin Building."
+    },
+    {
+      "category": "academic regulations",
+      "keywords": ["regulation", "probation", "discontinuation", "cgpa", "fail", "retake", "progress", "standing", "gpa requirement"],
+      "question": "What happens if my GPA falls below the required minimum?",
+      "answer": "UDSM uses the following academic standing rules: GPA >= 3.5: Good standing (Dean's List eligible). GPA 2.0–3.4: Satisfactory standing. GPA 1.5–1.9: Probation — you must retake failed courses. GPA < 1.5: Discontinuation for one academic year — you cannot continue in your programme. A student on probation for two consecutive semesters will be discontinued. Discontinued students may apply for readmission after one year. The grading scale: A (70–100%), B+ (60–69%), B (55–59%), C+ (50–54%), C (45–49%), D (40–44%), E (35–39%), F (0–34%)."
     }
   ]
 }
+

@@ -1,18 +1,16 @@
 # =============================================================================
-# IS 365 - Docker Compose: Ollama LLM + FastAPI Backend
+# UDSM Student Support AI — Docker Compose
 #
-# Prerequisites: Docker Desktop with WSL2 backend
-#
-# Start both services:   docker-compose up -d
-# Stop both services:    docker-compose down
-# View logs:             docker-compose logs -f
+# Start:       docker compose up -d
+# Stop:        docker compose down
+# Logs:        docker compose logs -f
+# Rebuild:     docker compose up -d --build
+# Reset data:  docker compose down -v   (⚠ deletes all volumes)
 # =============================================================================
-
-version: "3.9"
 
 services:
 
-  # ── Ollama LLM Server ──────────────────────────────────────────────
+  # ── Ollama LLM Server ──────────────────────────────────────────────────────
   ollama:
     image: ollama/ollama:latest
     container_name: ollama-llm
@@ -35,24 +33,27 @@ services:
           memory: 8g
           cpus: "4"
 
-  # ── Pull the model on startup ───────────────────────────────────────
+  # ── Pull the model on first startup ────────────────────────────────────────
+  # This one-shot service ensures the model is available before the backend starts.
+  # MODEL_NAME must match the value set on the backend service below.
   ollama-setup:
     image: ollama/ollama:latest
     container_name: ollama-setup
+    restart: "no"
     depends_on:
       ollama:
         condition: service_healthy
     volumes:
       - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
     entrypoint: ["/bin/sh", "-c"]
-    command: |
-      echo "Waiting for Ollama server..." && \
-      sleep 3 && \
-      echo "Pulling llama3.2:1b..." && \
-      ollama pull llama3.2:1b && \
-      echo "Model pulled successfully!"
+    command: >
+      echo "Pulling qwen2.5:3b model..." &&
+      ollama pull qwen2.5:3b &&
+      echo "Model ready."
 
-  # ── FastAPI Backend ─────────────────────────────────────────────────
+  # ── FastAPI Backend ─────────────────────────────────────────────────────────
   backend:
     build:
       context: .
@@ -66,18 +67,32 @@ services:
       - "8000:8000"
     environment:
       - OLLAMA_API_URL=http://ollama:11434/api/generate
-      - MODEL_NAME=llama3.2:1b
+      # Must match the model pulled by ollama-setup above
+      - MODEL_NAME=qwen2.5:3b
       - API_HOST=0.0.0.0
       - API_PORT=8000
     volumes:
+      # Persist application logs across restarts
       - ./backend/logs:/app/backend/logs
+      # Persist ChromaDB vector index — avoids re-indexing on every restart
+      - vector_store_data:/app/backend/vector_store
+      # Persist HuggingFace model cache — avoids re-downloading the 80 MB model
+      - hf_cache:/app/.cache/huggingface
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
       interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 20s
+      timeout: 15s
+      retries: 5
+      # Allow time for embedding model download + ChromaDB index build on first run
+      start_period: 120s
 
 volumes:
+  # Ollama model weights
   ollama_data:
+    driver: local
+  # ChromaDB persistent vector index
+  vector_store_data:
+    driver: local
+  # sentence-transformers / HuggingFace model cache
+  hf_cache:
     driver: local
