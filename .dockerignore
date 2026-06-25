@@ -1,15 +1,39 @@
+# ── Python ────────────────────────────────────────────────────────────────────
 venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
+.eggs/
+
+# ── Git / IDE ─────────────────────────────────────────────────────────────────
 .git/
 .gitignore
 .gitattributes
+.qodo/
+.pytest_cache/
+
+# ── Runtime-generated data (these are mounted as Docker volumes) ───────────────
 backend/logs/
+backend/vector_store/
+.cache/
+
+# ── Docs / tests / scripts (not needed in the image) ─────────────────────────
 docs/
 tests/
-.env
-.env.*
+source-docs/
+# Dev launcher scripts — Windows-only, not needed inside Linux container
 *.ps1
 *.bat
+
+# ── Secrets / env files ───────────────────────────────────────────────────────
+.env
+.env.*
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.log
+pip_install.log
+README.md
+generate_report.py
+source-urls.txt
