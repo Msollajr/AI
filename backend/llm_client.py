@@ -2,7 +2,7 @@ import json
 import logging
 import re
 from pathlib import Path
-from typing import Dict, Any, Tuple, Optional, List
+from typing import Any, Dict, Tuple, Optional, List
 from datetime import datetime, timedelta
 from difflib import SequenceMatcher
 
@@ -105,10 +105,15 @@ class LLMClient:
         self.api_url = OLLAMA_API_URL
         self.model = MODEL_NAME
         self.faq_db = self._load_faq_database()
-        self.knowledge_base = self._load_knowledge_base()
         self.memory = ConversationMemory()
         self.cache = SemanticCache()
-        self.kb_index = self._build_kb_index()
+
+        # Initialise semantic vector store (replaces keyword index).
+        # build() auto-detects doc changes via content hash — no manual force=True needed.
+        from vector_store import VectorStore
+        self.vector_store = VectorStore()
+        kb_path = BASE_DIR.parent / "knowledge-base"
+        self.vector_store.build(kb_path)
 
     def _load_faq_database(self) -> list:
         try:
@@ -121,44 +126,15 @@ class LLMClient:
             logger.error(f"Error loading FAQ database: {e}")
             return []
 
-    def _load_knowledge_base(self) -> Dict[str, str]:
-        kb_path = BASE_DIR.parent / "knowledge-base"
-        docs = {}
-        if not kb_path.exists():
-            logger.warning(f"Knowledge base directory not found at {kb_path}")
-            return docs
-        for md_file in sorted(kb_path.glob("*.md")):
-            try:
-                content = md_file.read_text(encoding="utf-8")
-                name = md_file.stem.replace("-", " ").title()
-                docs[name] = content
-                logger.info(f"Loaded knowledge document: {name}")
-            except Exception as e:
-                logger.error(f"Error loading {md_file.name}: {e}")
-        return docs
-
-    def _build_kb_index(self) -> List[Dict[str, Any]]:
-        index = []
-        for doc_name, content in self.knowledge_base.items():
-            sections = re.split(r'\n## ', content)
-            for section in sections:
-                lines = section.strip().split('\n')
-                title = lines[0].replace('#', '').strip()
-                body = '\n'.join(lines[1:]).strip()
-                words = set(re.findall(r'\b[a-z]{4,}\b', (title + ' ' + body[:500]).lower()))
-                index.append({
-                    "doc": doc_name,
-                    "section": title,
-                    "content": section.strip(),
-                    "keywords": words
-                })
-        return index
-
     def retrieve_context(self, question: str) -> Tuple[Optional[str], Optional[str], List[str], float]:
+        """
+        Retrieve relevant context for a question using:
+          1. FAQ keyword matching (fast, direct answers)
+          2. Semantic vector search via ChromaDB (replaces old keyword overlap)
+        """
         question_lower = question.lower()
-        search_terms = set(re.findall(r'\b[a-z]{3,}\b', question_lower))
 
-        # 1. Search FAQ database (keyword matching)
+        # 1. FAQ keyword matching — kept as-is for fast direct answers
         matched_faqs = []
         matched_category = None
         for faq in self.faq_db:
@@ -168,18 +144,10 @@ class LLMClient:
                     matched_category = matched_category or faq.get("category")
                     break
 
-        # 2. Search knowledge base documents (full-text relevance scoring)
-        kb_matches = []
-        for entry in self.kb_index:
-            overlap = search_terms & entry["keywords"]
-            if overlap:
-                score = len(overlap) / max(len(search_terms), 1)
-                kb_matches.append((score, entry["doc"], entry["section"], entry["content"]))
+        # 2. Semantic vector search — replaces old keyword overlap loop
+        vec_context, vec_category, vec_sources, vec_score = self.vector_store.retrieve(question)
 
-        kb_matches.sort(reverse=True)
-        top_kb = kb_matches[:3]
-
-        # 3. Build combined context
+        # 3. Build combined context (FAQ blocks first, then vector chunks)
         context_parts = []
         sources = []
 
@@ -192,28 +160,15 @@ class LLMClient:
                 )
                 sources.append(f"UDSM FAQ - {faq['category'].title()}")
 
-        for score, doc, section, content in top_kb:
-            header = f"=== {doc}: {section} ==="
-            context_parts.append(f"[{doc} - {section}]\n{content[:1200]}")
-            sources.append(f"{doc}")
-            matched_category = matched_category or doc
+        if vec_context:
+            context_parts.append(vec_context)
+            for s in vec_sources:
+                if s not in sources:
+                    sources.append(s)
+            matched_category = matched_category or vec_category
 
         if context_parts:
-            return "\n\n".join(context_parts), matched_category or "General", sources, min(len(kb_matches) / 3 + 0.3, 1.0)
-
-        # 3. Fallback: keyword-based section search
-        for doc_name, content in self.knowledge_base.items():
-            sections = re.split(r'\n## ', content)
-            for section in sections:
-                section_lower = section.lower()
-                match_count = sum(1 for term in search_terms if term in section_lower)
-                if match_count >= 2:
-                    context_parts.append(f"[{doc_name}]\n{section[:1500]}")
-                    sources.append(doc_name)
-                    matched_category = doc_name
-
-        if context_parts:
-            return "\n\n".join(context_parts[:3]), matched_category or "General", sources[:3], 0.6
+            return "\n\n".join(context_parts), matched_category or "General", sources, vec_score
 
         return None, None, [], 0.0
 
@@ -249,7 +204,8 @@ class LLMClient:
             sections.append(conversation_context)
 
         if context:
-            context_truncated = context[:2000] if len(context) > 2000 else context
+            # 4000 chars gives the LLM a fuller view of large docs (prospectus, almanac).
+            context_truncated = context[:4000] if len(context) > 4000 else context
             sections.append(f"Official UDSM information:\n{context_truncated}")
 
         sections.append(f"Student question: {question}")
@@ -513,7 +469,10 @@ class LLMClient:
             "confidence_label": conf_label,
             "confidence_score": conf_score,
             "faq_direct": faq_answer is not None and faq_confidence >= 0.60,
-            "prompt_used": prompt if not use_improved_prompt else prompt
+            # Only expose the raw prompt when the caller explicitly requests the
+            # basic (non-improved) mode; otherwise hide it to avoid leaking internal
+            # system instructions and injected context through the API response.
+            "prompt_used": prompt if not use_improved_prompt else ""
         }
 
         # 13. Update cache

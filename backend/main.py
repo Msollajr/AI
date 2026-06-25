@@ -23,8 +23,8 @@ logger = logging.getLogger("student_support_backend")
 # Initialize FastAPI and client
 app = FastAPI(
     title="University Student Support Assistant API",
-    description="Backend API serving a self-hosted LLM with keyword RAG context search.",
-    version="1.0.0"
+    description="Backend API serving a self-hosted LLM with semantic vector RAG (ChromaDB + sentence-transformers).",
+    version="2.0.0"
 )
 
 # Configure CORS
