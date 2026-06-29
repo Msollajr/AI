@@ -13,54 +13,7 @@
 
 services:
 
-  # ── Ollama LLM Server ──────────────────────────────────────────────────────
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama-llm
-    restart: unless-stopped
-    networks:
-      - udsm_net
-    volumes:
-      - ollama_data:/root/.ollama
-    ports:
-      - "11435:11434"
-    environment:
-      - OLLAMA_KEEP_ALIVE=24h
-    healthcheck:
-      test: ["CMD-SHELL", "ollama list || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
-    deploy:
-      resources:
-        limits:
-          # CPU-only inference — AMD Radeon 740M is integrated (not CUDA/ROCm capable).
-          # Allocate 5 of 6 cores to Ollama; reserve 1 core for backend + OS.
-          memory: 10g      # qwen2.5:3b needs ~2.5 GB; 10g leaves 5 GB free for OS + backend
-          cpus: "5"        # 5 of 6 physical cores (12 logical)
 
-  # ── Pull the model on first startup ────────────────────────────────────────
-  # One-shot service: ensures the model is available before the backend starts.
-  # MODEL_NAME must match the value used in the backend service below.
-  ollama-setup:
-    image: ollama/ollama:latest
-    container_name: ollama-setup
-    restart: "no"
-    networks:
-      - udsm_net
-    depends_on:
-      ollama:
-        condition: service_healthy
-    volumes:
-      - ollama_data:/root/.ollama
-    environment:
-      - OLLAMA_HOST=http://ollama:11434
-    entrypoint: ["/bin/sh", "-c"]
-    command: >
-      echo "Pulling ${MODEL_NAME:-qwen2.5:3b} model..." &&
-      ollama pull ${MODEL_NAME:-qwen2.5:3b} &&
-      echo "Model ready."
 
   # ── PostgreSQL Database ─────────────────────────────────────────────────────
   db:
@@ -91,8 +44,6 @@ services:
     networks:
       - udsm_net
     depends_on:
-      ollama-setup:
-        condition: service_completed_successfully
       db:
         condition: service_healthy
     # Backend is only directly accessible via Nginx in production.
@@ -103,7 +54,7 @@ services:
       - path: .env
         required: false     # allows startup without a .env (uses built-in defaults)
     environment:
-      - OLLAMA_API_URL=http://ollama:11434/api/generate
+      - OLLAMA_API_URL=http://host.docker.internal:11434/api/generate
       - MODEL_NAME=${MODEL_NAME:-qwen2.5:3b}
       - API_HOST=0.0.0.0
       - API_PORT=8000
@@ -129,9 +80,11 @@ services:
   #   /api/    → proxies to FastAPI backend (strips /api prefix)
   #   /health  → proxies to FastAPI health check
   #   /docs    → proxies to FastAPI Swagger UI
-  nginx:
-    image: nginx:1.27-alpine
-    container_name: udsm-nginx
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: udsm-frontend
     restart: unless-stopped
     networks:
       - udsm_net
@@ -139,10 +92,7 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./frontend:/usr/share/nginx/html:ro
+      - "8080:80"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost/health"]
       interval: 30s
@@ -152,9 +102,7 @@ services:
 
 # ── Named Volumes ──────────────────────────────────────────────────────────────
 volumes:
-  # Ollama model weights
-  ollama_data:
-    driver: local
+
   # ChromaDB persistent vector index
   vector_store_data:
     driver: local
