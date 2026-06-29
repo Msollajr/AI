@@ -1,0 +1,57 @@
+# =============================================================================
+# UDSM Student Support AI — Docker Compose Development Override
+#
+# Extends docker-compose.yml for local development:
+#   - Hot-reload: source code is mounted as a live volume
+#   - Backend port 8000 directly exposed (no Nginx required)
+#   - Nginx service disabled
+#   - Uvicorn runs with --reload flag
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml up
+#
+# Tip: Docker Compose auto-loads docker-compose.override.yml when present,
+# so in development you can simply run:
+#   docker compose up
+# =============================================================================
+
+services:
+
+  # ── Backend: hot-reload dev mode ───────────────────────────────────────────
+  backend:
+    # Override the CMD to enable uvicorn --reload
+    command: >
+      python -m uvicorn main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+      --reload-dir /app/backend
+    ports:
+      # Expose directly in dev — no Nginx needed
+      - "8000:8000"
+    volumes:
+      # Mount source directories as live volumes for instant hot-reload
+      - ./backend:/app/backend
+      - ./knowledge-base:/app/knowledge-base
+      - ./frontend:/app/frontend
+      # Keep volume mounts from base compose (logs, vector_store, hf_cache)
+      - ./backend/logs:/app/backend/logs
+      - vector_store_data:/app/backend/vector_store
+      - hf_cache:/app/.cache/huggingface
+    environment:
+      # Shorter health check start period for dev (no model download wait)
+      - PYTHONUNBUFFERED=1
+    # Override healthcheck with a faster cycle for quicker dev feedback
+    healthcheck:
+      start_period: 30s
+
+  # ── Nginx: disabled in development ─────────────────────────────────────────
+  # Override the nginx service to an image that exits immediately (disabled).
+  nginx:
+    image: alpine:latest
+    entrypoint: ["echo", "Nginx disabled in development mode."]
+    restart: "no"
+    ports: []
+    depends_on: []
+    healthcheck:
+      disable: true

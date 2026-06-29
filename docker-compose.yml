@@ -1,11 +1,14 @@
 # =============================================================================
-# UDSM Student Support AI — Docker Compose
+# UDSM Student Support AI — Docker Compose (Production)
 #
 # Start:       docker compose up -d
 # Stop:        docker compose down
 # Logs:        docker compose logs -f
 # Rebuild:     docker compose up -d --build
 # Reset data:  docker compose down -v   (⚠ deletes all volumes)
+#
+# For local development with hot-reload, use:
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml up
 # =============================================================================
 
 services:
@@ -15,10 +18,12 @@ services:
     image: ollama/ollama:latest
     container_name: ollama-llm
     restart: unless-stopped
+    networks:
+      - udsm_net
     volumes:
       - ollama_data:/root/.ollama
     ports:
-      - "11434:11434"
+      - "11435:11434"
     environment:
       - OLLAMA_KEEP_ALIVE=24h
     healthcheck:
@@ -30,16 +35,20 @@ services:
     deploy:
       resources:
         limits:
-          memory: 8g
-          cpus: "4"
+          # CPU-only inference — AMD Radeon 740M is integrated (not CUDA/ROCm capable).
+          # Allocate 5 of 6 cores to Ollama; reserve 1 core for backend + OS.
+          memory: 10g      # qwen2.5:3b needs ~2.5 GB; 10g leaves 5 GB free for OS + backend
+          cpus: "5"        # 5 of 6 physical cores (12 logical)
 
   # ── Pull the model on first startup ────────────────────────────────────────
-  # This one-shot service ensures the model is available before the backend starts.
-  # MODEL_NAME must match the value set on the backend service below.
+  # One-shot service: ensures the model is available before the backend starts.
+  # MODEL_NAME must match the value used in the backend service below.
   ollama-setup:
     image: ollama/ollama:latest
     container_name: ollama-setup
     restart: "no"
+    networks:
+      - udsm_net
     depends_on:
       ollama:
         condition: service_healthy
@@ -49,9 +58,28 @@ services:
       - OLLAMA_HOST=http://ollama:11434
     entrypoint: ["/bin/sh", "-c"]
     command: >
-      echo "Pulling qwen2.5:3b model..." &&
-      ollama pull qwen2.5:3b &&
+      echo "Pulling ${MODEL_NAME:-qwen2.5:3b} model..." &&
+      ollama pull ${MODEL_NAME:-qwen2.5:3b} &&
       echo "Model ready."
+
+  # ── PostgreSQL Database ─────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: udsm-postgres
+    restart: unless-stopped
+    networks:
+      - udsm_net
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=2018
+      - POSTGRES_DB=udsm_ai
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d udsm_ai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # ── FastAPI Backend ─────────────────────────────────────────────────────────
   backend:
@@ -60,23 +88,32 @@ services:
       dockerfile: Dockerfile
     container_name: udsm-llm-backend
     restart: unless-stopped
+    networks:
+      - udsm_net
     depends_on:
       ollama-setup:
         condition: service_completed_successfully
-    ports:
-      - "8000:8000"
+      db:
+        condition: service_healthy
+    # Backend is only directly accessible via Nginx in production.
+    # Uncomment below to expose port 8000 directly (e.g. for debugging).
+    # ports:
+    #   - "8000:8000"
+    env_file:
+      - path: .env
+        required: false     # allows startup without a .env (uses built-in defaults)
     environment:
       - OLLAMA_API_URL=http://ollama:11434/api/generate
-      # Must match the model pulled by ollama-setup above
-      - MODEL_NAME=qwen2.5:3b
+      - MODEL_NAME=${MODEL_NAME:-qwen2.5:3b}
       - API_HOST=0.0.0.0
       - API_PORT=8000
+      - DATABASE_URL=postgresql+asyncpg://postgres:2018@db:5432/udsm_ai
     volumes:
       # Persist application logs across restarts
       - ./backend/logs:/app/backend/logs
       # Persist ChromaDB vector index — avoids re-indexing on every restart
       - vector_store_data:/app/backend/vector_store
-      # Persist HuggingFace model cache — avoids re-downloading the 80 MB model
+      # Persist HuggingFace model cache — avoids re-downloading the embedding model
       - hf_cache:/app/.cache/huggingface
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
@@ -86,6 +123,34 @@ services:
       # Allow time for embedding model download + ChromaDB index build on first run
       start_period: 120s
 
+  # ── Nginx Reverse Proxy ─────────────────────────────────────────────────────
+  # Single entry point on port 80:
+  #   /        → serves frontend/index.html and static assets
+  #   /api/    → proxies to FastAPI backend (strips /api prefix)
+  #   /health  → proxies to FastAPI health check
+  #   /docs    → proxies to FastAPI Swagger UI
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: udsm-nginx
+    restart: unless-stopped
+    networks:
+      - udsm_net
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# ── Named Volumes ──────────────────────────────────────────────────────────────
 volumes:
   # Ollama model weights
   ollama_data:
@@ -96,3 +161,12 @@ volumes:
   # sentence-transformers / HuggingFace model cache
   hf_cache:
     driver: local
+  # PostgreSQL database volume
+  pg_data:
+    driver: local
+
+# ── Networks ───────────────────────────────────────────────────────────────────
+networks:
+  udsm_net:
+    driver: bridge
+    name: udsm_network

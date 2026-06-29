@@ -30,6 +30,13 @@ source-docs/
 # ── Secrets / env files ───────────────────────────────────────────────────────
 .env
 .env.*
+# Keep .env.example OUT of the image (it's documentation only)
+.env.example
+
+# ── Docker dev files (not needed inside the image) ───────────────────────────
+docker-compose.override.yml
+deploy.bat
+nginx.conf
 
 # ── Misc ──────────────────────────────────────────────────────────────────────
 *.log
