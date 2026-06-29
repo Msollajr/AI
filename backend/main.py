@@ -1,13 +1,19 @@
 import datetime
 import logging
 import sys
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
+from sqlalchemy.ext.asyncio import AsyncSession
 from config import LOG_FILE_PATH, HOST, PORT, PROJECT_ROOT
 from llm_client import LLMClient, LLMConnectionError
+import database
+import models
+import auth
+from sqlalchemy.future import select
+from sqlalchemy import desc
 
 # Setup logging
 logging.basicConfig(
@@ -45,10 +51,14 @@ app.mount(
     name="static"
 )
 
+# Include Auth router
+app.include_router(auth.router)
+
 # Request/Response schemas
 class QuestionRequest(BaseModel):
     question: str = Field(default="", description="The student's question")
     use_improved_prompt: bool = Field(True, description="Whether to apply prompt engineering / system template")
+    session_id: str | None = Field(None, description="The ID of the chat session, if continuing an existing chat")
 
     @field_validator("question", mode="before")
     @classmethod
@@ -67,11 +77,26 @@ class AskResponse(BaseModel):
     confidence_score: float = 0.0
     faq_direct: bool = False
     timestamp: str
+    session_id: str | None = None
+
+class ChatSessionResponse(BaseModel):
+    id: str
+    title: str
+    created_at: str
+
+class InteractionResponse(BaseModel):
+    id: int
+    question: str
+    answer: str
+    rag_context_used: bool
+    category: str | None
+    timestamp: str
 
 class FeedbackRequest(BaseModel):
     question: str
     answer: str
     rating: str = Field(..., description="Good / Average / Poor")
+    interaction_id: int | None = None
 
     @field_validator("rating")
     @classmethod
@@ -112,7 +137,7 @@ async def health_check():
     }
 
 @app.post("/ask", response_model=AskResponse)
-async def ask_question(request: QuestionRequest):
+async def ask_question(request: QuestionRequest, db: AsyncSession = Depends(database.get_db), current_user: models.User | None = Depends(auth.get_current_user)):
     """
     Receives a student's question, retrieves FAQ context, queries the local LLM,
     logs the interaction, and returns the response.
@@ -150,6 +175,33 @@ async def ask_question(request: QuestionRequest):
             f"----------------------------------------"
         )
         
+        # Save to database
+        user_id = current_user.id if current_user else None
+        session_id = request.session_id
+        
+        if current_user:
+            if not session_id:
+                title = question[:30] + ("..." if len(question) > 30 else "")
+                new_session = models.ChatSession(user_id=user_id, title=title)
+                db.add(new_session)
+                await db.commit()
+                await db.refresh(new_session)
+                session_id = str(new_session.id)
+                
+        interaction = models.InteractionLog(
+            user_id=user_id,
+            session_id=session_id,
+            question=question,
+            answer=result["answer"],
+            rag_context_used=result["rag_context_used"],
+            category=result.get("category"),
+            duration_sec=duration,
+            prompt_used=result.get("prompt_used")
+        )
+        db.add(interaction)
+        await db.commit()
+        await db.refresh(interaction)
+        
         return AskResponse(
             answer=result["answer"],
             rag_context_used=result["rag_context_used"],
@@ -158,7 +210,8 @@ async def ask_question(request: QuestionRequest):
             confidence_label=result.get("confidence_label", "Low"),
             confidence_score=result.get("confidence_score", 0.0),
             faq_direct=result.get("faq_direct", False),
-            timestamp=start_time.isoformat()
+            timestamp=start_time.isoformat(),
+            session_id=session_id
         )
 
     except LLMConnectionError as e:
@@ -175,33 +228,84 @@ async def ask_question(request: QuestionRequest):
         )
 
 @app.post("/feedback", status_code=status.HTTP_200_OK)
-async def submit_feedback(request: FeedbackRequest):
+async def submit_feedback(request: FeedbackRequest, db: AsyncSession = Depends(database.get_db), current_user: models.User | None = Depends(auth.get_current_user)):
     """
-    Saves user feedback / rating (Good / Average / Poor) to a feedback log.
+    Saves user feedback / rating (Good / Average / Poor) to the database.
     """
-    feedback_file = LOG_FILE_PATH.parent / "feedback.log"
-    timestamp = datetime.datetime.now().isoformat()
-    
-    log_entry = (
-        f"Timestamp: {timestamp}\n"
-        f"Question: {request.question}\n"
-        f"Answer: {request.answer}\n"
-        f"Rating: {request.rating}\n"
-        f"----------------------------------------\n"
-    )
-    
     try:
-        with open(feedback_file, "a", encoding="utf-8") as f:
-            f.write(log_entry)
+        user_id = current_user.id if current_user else None
+        feedback = models.Feedback(
+            user_id=user_id,
+            interaction_id=request.interaction_id,
+            question=request.question,
+            answer=request.answer,
+            rating=request.rating
+        )
+        db.add(feedback)
+        await db.commit()
         
         logger.info(f"Feedback logged successfully: {request.rating}")
-        return {"status": "success", "message": "Feedback saved."}
+        return {"status": "success", "message": "Feedback saved to database."}
     except Exception as e:
-        logger.error(f"Failed to save feedback: {e}")
+        logger.error(f"Failed to save feedback to database: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to save feedback."
         )
+
+@app.get("/chat/sessions", response_model=list[ChatSessionResponse])
+async def get_chat_sessions(db: AsyncSession = Depends(database.get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Fetches all chat sessions for the current user."""
+    result = await db.execute(
+        select(models.ChatSession)
+        .filter(models.ChatSession.user_id == current_user.id)
+        .order_by(desc(models.ChatSession.created_at))
+    )
+    sessions = result.scalars().all()
+    return [
+        ChatSessionResponse(
+            id=str(s.id),
+            title=s.title,
+            created_at=s.created_at.isoformat()
+        ) for s in sessions
+    ]
+
+@app.get("/chat/sessions/{session_id}", response_model=list[InteractionResponse])
+async def get_session_interactions(session_id: str, db: AsyncSession = Depends(database.get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Fetches all interactions for a specific session."""
+    result = await db.execute(
+        select(models.InteractionLog)
+        .filter(models.InteractionLog.session_id == session_id)
+        .filter(models.InteractionLog.user_id == current_user.id)
+        .order_by(models.InteractionLog.timestamp)
+    )
+    interactions = result.scalars().all()
+    return [
+        InteractionResponse(
+            id=i.id,
+            question=i.question,
+            answer=i.answer,
+            rag_context_used=i.rag_context_used,
+            category=i.category,
+            timestamp=i.timestamp.isoformat()
+        ) for i in interactions
+    ]
+
+@app.delete("/chat/sessions/{session_id}")
+async def delete_chat_session(session_id: str, db: AsyncSession = Depends(database.get_db), current_user: models.User = Depends(auth.get_current_active_user)):
+    """Deletes a specific chat session."""
+    result = await db.execute(
+        select(models.ChatSession)
+        .filter(models.ChatSession.id == session_id)
+        .filter(models.ChatSession.user_id == current_user.id)
+    )
+    session = result.scalars().first()
+    if not session:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found")
+    
+    await db.delete(session)
+    await db.commit()
+    return {"status": "success", "message": "Session deleted"}
 
 if __name__ == "__main__":
     import uvicorn
