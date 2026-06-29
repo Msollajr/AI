@@ -19,13 +19,9 @@ services:
 
   # ── Backend: hot-reload dev mode ───────────────────────────────────────────
   backend:
-    # Override the CMD to enable uvicorn --reload
+    # Override the CMD to enable uvicorn --reload and run migrations
     command: >
-      python -m uvicorn main:app
-      --host 0.0.0.0
-      --port 8000
-      --reload
-      --reload-dir /app/backend
+      bash -c "alembic upgrade head && python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/backend"
     ports:
       # Expose directly in dev — no Nginx needed
       - "8000:8000"
@@ -45,13 +41,4 @@ services:
     healthcheck:
       start_period: 30s
 
-  # ── Nginx: disabled in development ─────────────────────────────────────────
-  # Override the nginx service to an image that exits immediately (disabled).
-  nginx:
-    image: alpine:latest
-    entrypoint: ["echo", "Nginx disabled in development mode."]
-    restart: "no"
-    ports: []
-    depends_on: []
-    healthcheck:
-      disable: true
+

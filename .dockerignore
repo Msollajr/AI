@@ -36,7 +36,6 @@ source-docs/
 # ── Docker dev files (not needed inside the image) ───────────────────────────
 docker-compose.override.yml
 deploy.bat
-nginx.conf
 
 # ── Misc ──────────────────────────────────────────────────────────────────────
 *.log

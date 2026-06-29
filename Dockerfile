@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy production-only requirements (no streamlit / pytest)
 COPY requirements-prod.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements-prod.txt
 
 # ── Stage 2: lean runtime image ───────────────────────────────────────────────
