@@ -5,12 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>UDSM Student Support AI Portal</title>
+  <!-- Fonts: Load Inter if online, fallback to system fonts gracefully if offline -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Local Scripts for full offline support -->
+  <script src="/static/js/tailwindcss.min.js"></script>
+  <script src="/static/js/lucide.min.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -25,7 +27,7 @@
               darkSurface: '#111A30'
             }
           },
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          fontFamily: { sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'] },
           boxShadow: {
             'premium': '0 10px 30px -15px rgba(0,0,0,0.06)',
             'premium-hover': '0 20px 40px -20px rgba(0,0,0,0.1)',
@@ -64,10 +66,89 @@
     a svg {
       pointer-events: none;
     }
+    
+    #sidebar.collapsed .sidebar-header {
+      padding: 1rem 0.5rem !important;
+      justify-content: center !important;
+    }
+    #sidebar.collapsed .nav-btn,
+    #sidebar.collapsed .session-btn {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+      justify-content: center !important;
+    }
+    #sidebar.collapsed .session-btn .trash-btn {
+      display: none !important;
+    }
+    #sidebar.collapsed .sidebar-footer {
+      flex-direction: column !important;
+      padding: 1rem 0.5rem !important;
+      gap: 1rem !important;
+    }
+    #sidebar.collapsed .sidebar-footer > div {
+      margin: 0 !important;
+      justify-content: center !important;
+    }
   </style>
 </head>
 
 <body class="h-full bg-slate-50 text-slate-800 dark:bg-mancity-bgDark dark:text-slate-100 flex overflow-hidden">
+
+  <!-- Auth Overlay -->
+  <div id="auth-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-50 dark:bg-mancity-bgDark hidden">
+    <div class="relative w-full max-w-md p-8 bg-white dark:bg-mancity-darkSurface rounded-3xl shadow-premium border border-slate-200 dark:border-mancity-navy-darkBorder/40 overflow-hidden mx-4">
+      <!-- Decor -->
+      <div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-mancity-sky/10 blur-3xl pointer-events-none"></div>
+      <div class="absolute -left-20 -bottom-20 w-64 h-64 rounded-full bg-mancity-navy/10 blur-3xl pointer-events-none"></div>
+      
+      <div class="relative z-10 flex flex-col items-center mb-8">
+        <div class="p-3 bg-mancity-sky/10 rounded-2xl mb-4 text-mancity-sky">
+          <img src="/static/udsm-logo.png" alt="UDSM Logo" class="w-12 h-12 object-contain">
+        </div>
+        <h2 id="auth-title" class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Welcome Back</h2>
+        <p id="auth-subtitle" class="text-sm text-slate-500 dark:text-slate-400 mt-1">Sign in to access the portal</p>
+      </div>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="relative z-10 space-y-4">
+        <div id="auth-error" class="hidden p-3 bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400 text-xs rounded-xl text-center font-medium border border-rose-100 dark:border-rose-900/50"></div>
+        
+        <div id="name-field-container" class="hidden space-y-1.5">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Full Name</label>
+          <div class="relative flex items-center">
+            <i data-lucide="user" class="absolute left-3 w-4 h-4 text-slate-400"></i>
+            <input type="text" id="auth-name" placeholder="John Doe" class="w-full bg-slate-50 dark:bg-mancity-navy border border-slate-200 dark:border-slate-800 text-sm rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-mancity-sky focus:border-transparent dark:text-white transition">
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Email Address</label>
+          <div class="relative flex items-center">
+            <i data-lucide="mail" class="absolute left-3 w-4 h-4 text-slate-400"></i>
+            <input type="email" id="auth-email" required placeholder="student@udsm.ac.tz" class="w-full bg-slate-50 dark:bg-mancity-navy border border-slate-200 dark:border-slate-800 text-sm rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-mancity-sky focus:border-transparent dark:text-white transition">
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300">Password</label>
+          <div class="relative flex items-center">
+            <i data-lucide="lock" class="absolute left-3 w-4 h-4 text-slate-400"></i>
+            <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-50 dark:bg-mancity-navy border border-slate-200 dark:border-slate-800 text-sm rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-mancity-sky focus:border-transparent dark:text-white transition">
+          </div>
+        </div>
+
+        <button type="submit" id="auth-submit-btn" class="w-full py-3.5 mt-2 bg-mancity-sky hover:bg-mancity-sky-hover text-white font-bold rounded-xl transition shadow-md hover:shadow-lg flex justify-center items-center gap-2">
+          <span id="auth-btn-text">Sign In</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <div class="relative z-10 mt-6 text-center">
+        <button onclick="toggleAuthMode()" type="button" class="text-xs font-medium text-slate-500 hover:text-mancity-sky dark:text-slate-400 transition">
+          <span id="auth-toggle-text">Don't have an account? Sign up</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Mobile Sidebar Overlay Backdrop -->
   <div id="sidebar-overlay" onclick="closeMobileSidebar()"
@@ -75,11 +156,11 @@
 
   <!-- Left Sidebar -->
   <aside id="sidebar"
-    class="md:static md:z-auto fixed inset-y-0 left-0 z-40 w-64 md:w-64 border-r flex flex-col justify-between transition-all duration-300 flex-shrink-0 bg-mancity-navy border-mancity-navy-darkBorder/40 md:translate-x-0 -translate-x-full md:flex">
+    class="md:static md:z-auto fixed inset-y-0 left-0 z-40 w-64 border-r flex flex-col justify-between transition-all duration-300 flex-shrink-0 bg-mancity-navy border-mancity-navy-darkBorder/40 md:translate-x-0 -translate-x-full md:flex">
 
     <div>
       <!-- Brand Header -->
-      <div class="p-4 md:p-6 flex items-center gap-3 border-b border-white/5">
+      <div class="p-4 md:p-6 flex items-center gap-3 border-b border-white/5 sidebar-header transition-all">
         <div class="p-1 rounded-xl md:p-1.5 flex justify-center items-center flex-shrink-0">
           <img src="/static/udsm-logo.png" alt="UDSM Logo" class="w-10 h-10 md:w-12 md:h-12 object-contain">
         </div>
@@ -94,61 +175,39 @@
 
       <!-- Navigation links -->
       <nav class="p-3 md:p-4 space-y-1 overflow-y-auto max-h-[calc(100vh-12rem)]">
-        <a href="#" onclick="switchTab('chat'); closeMobileSidebar()" id="nav-chat"
-          class="nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-mancity-sky text-white font-semibold transition-all duration-200 shadow-sm shadow-mancity-sky/10">
-          <i data-lucide="message-square" class="w-4 h-4 md:w-5 md:h-5 flex-shrink-0"></i>
-          <span class="sidebar-text text-xs md:text-sm">AI Assistant</span>
-        </a>
+        <button onclick="startNewChat(); closeMobileSidebar()" id="nav-new-chat"
+          class="nav-btn w-full flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl bg-mancity-sky text-white font-semibold transition-all duration-200 shadow-sm shadow-mancity-sky/10 hover:bg-mancity-sky-hover">
+          <i data-lucide="plus" class="w-4 h-4 md:w-5 md:h-5 flex-shrink-0"></i>
+          <span class="sidebar-text text-xs md:text-sm">New Chat</span>
+        </button>
 
         <div
           class="pt-4 md:pt-5 pb-1 md:pb-2 px-3 md:px-4 text-[10px] md:text-xs font-semibold text-slate-500 uppercase tracking-wider sidebar-text">
-          University Services
+          Recent Chats
         </div>
 
-        <div class="space-y-0.5 md:space-y-1">
-          <a href="#" onclick="selectPredefined('How do I register for courses online?'); closeMobileSidebar()"
-            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
-            <i data-lucide="book-open" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
-            <span class="sidebar-text truncate">Course Registration</span>
-          </a>
-          <a href="#" onclick="selectPredefined('What happens if I miss my exam due to illness?'); closeMobileSidebar()"
-            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
-            <i data-lucide="file-text" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
-            <span class="sidebar-text truncate">Examination Rules</span>
-          </a>
-          <a href="#"
-            onclick="selectPredefined('How do I search for materials in the library catalog?'); closeMobileSidebar()"
-            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
-            <i data-lucide="library" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
-            <span class="sidebar-text truncate">Library Access</span>
-          </a>
-          <a href="#" onclick="selectPredefined('Who do I contact for ICT support on campus?'); closeMobileSidebar()"
-            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
-            <i data-lucide="monitor" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
-            <span class="sidebar-text truncate">ICT Help Desk</span>
-          </a>
-          <a href="#" onclick="selectPredefined('How do I apply for accommodation on campus?'); closeMobileSidebar()"
-            class="flex items-center gap-3 px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition">
-            <i data-lucide="home" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
-            <span class="sidebar-text truncate">Hostel Application</span>
-          </a>
+        <div id="chat-history-list" class="space-y-0.5 md:space-y-1 overflow-y-auto">
+          <!-- Dynamically populated sessions go here -->
         </div>
       </nav>
     </div>
 
     <!-- Sidebar Footer -->
-    <div class="p-3 md:p-4 border-t border-white/5">
-      <div class="flex items-center justify-between">
-        <button onclick="toggleSidebar()"
-          class="hidden md:flex p-2 hover:bg-white/5 rounded-lg transition text-slate-400 hover:text-white"
-          title="Collapse Sidebar">
-          <i id="sidebar-collapse-icon" data-lucide="chevron-left" class="w-5 h-5"></i>
-        </button>
-        <div class="sidebar-text flex items-center gap-2 text-xs">
-          <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="text-[10px] md:text-xs text-slate-400 font-medium">System Ready</span>
+    <div class="p-3 md:p-4 border-t border-white/5 flex items-center justify-between sidebar-footer transition-all">
+      <div class="flex items-center gap-3 overflow-hidden cursor-pointer hover:opacity-80 transition" onclick="logout()" title="Click to logout">
+        <div id="user-avatar" class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-mancity-sky flex items-center justify-center text-white font-bold text-xs md:text-sm flex-shrink-0 shadow-sm">
+          <i data-lucide="user" class="w-4 h-4"></i>
+        </div>
+        <div class="sidebar-text flex flex-col min-w-0 transition-opacity">
+          <span id="user-name-display" class="text-xs md:text-sm font-semibold text-white truncate">User</span>
+          <span id="user-role-display" class="text-[10px] md:text-[11px] text-slate-400 truncate capitalize">student</span>
         </div>
       </div>
+      <button onclick="toggleSidebar()"
+        class="hidden md:flex p-1.5 hover:bg-white/5 rounded-lg transition text-slate-400 hover:text-white flex-shrink-0"
+        title="Collapse Sidebar">
+        <i id="sidebar-collapse-icon" data-lucide="chevron-left" class="w-5 h-5"></i>
+      </button>
     </div>
   </aside>
 
@@ -192,6 +251,10 @@
         <!-- Mobile status dot -->
         <span class="sm:hidden w-2 h-2 rounded-full bg-slate-400" id="status-dot-mobile"></span>
 
+        <button onclick="logout()" class="p-1.5 md:p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:rounded-xl transition text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20" title="Sign Out">
+          <i data-lucide="log-out" class="w-4 h-4 md:w-5 md:h-5"></i>
+        </button>
+
         <button onclick="toggleDarkMode()"
           class="p-1.5 md:p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:rounded-xl transition text-slate-500 dark:text-slate-400"
           title="Toggle Theme">
@@ -233,42 +296,7 @@
                 </p>
               </div>
 
-              <!-- Suggested Cards -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mt-6 md:mt-10 px-2 md:px-0 suggestion-cards">
-                <button data-question="How do I register for courses online?"
-                  class="p-3 md:p-5 bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl hover:border-mancity-sky text-left transition hover:shadow-premium group cursor-pointer">
-                  <div class="group-hover:scale-105 transition duration-200 text-mancity-sky"><i data-lucide="book-open"
-                      class="w-4 h-4 md:w-5 h-4 md:h-5 mb-1.5 md:mb-2.5"></i></div>
-                  <div class="font-bold text-xs md:text-sm text-slate-900 dark:text-white">Online Course Registration
-                  </div>
-                  <div class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 md:mt-1 leading-relaxed">
-                    Steps, deadlines, and online portal details.</div>
-                </button>
-                <button data-question="What happens if I miss my exam due to illness?"
-                  class="p-3 md:p-5 bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl hover:border-mancity-sky text-left transition hover:shadow-premium group cursor-pointer">
-                  <div class="group-hover:scale-105 transition duration-200 text-mancity-sky"><i data-lucide="file-text"
-                      class="w-4 h-4 md:w-5 h-4 md:h-5 mb-1.5 md:mb-2.5"></i></div>
-                  <div class="font-bold text-xs md:text-sm text-slate-900 dark:text-white">Missed Exams Policy</div>
-                  <div class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 md:mt-1 leading-relaxed">
-                    Sickness certificates and deferment.</div>
-                </button>
-                <button data-question="How do I apply for accommodation on campus?"
-                  class="p-3 md:p-5 bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl hover:border-mancity-sky text-left transition hover:shadow-premium group cursor-pointer">
-                  <div class="group-hover:scale-105 transition duration-200 text-mancity-sky"><i data-lucide="home"
-                      class="w-4 h-4 md:w-5 h-4 md:h-5 mb-1.5 md:mb-2.5"></i></div>
-                  <div class="font-bold text-xs md:text-sm text-slate-900 dark:text-white">Hostel Application Room</div>
-                  <div class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 md:mt-1 leading-relaxed">
-                    Application process and guidelines.</div>
-                </button>
-                <button data-question="What are the available methods for paying fees?"
-                  class="p-3 md:p-5 bg-white dark:bg-mancity-darkSurface border border-slate-200 dark:border-mancity-navy-darkBorder/40 rounded-xl md:rounded-2xl hover:border-mancity-sky text-left transition hover:shadow-premium group cursor-pointer">
-                  <div class="group-hover:scale-105 transition duration-200 text-mancity-sky"><i
-                      data-lucide="credit-card" class="w-4 h-4 md:w-5 h-4 md:h-5 mb-1.5 md:mb-2.5"></i></div>
-                  <div class="font-bold text-xs md:text-sm text-slate-900 dark:text-white">Tuition Fee Guidelines</div>
-                  <div class="text-[10px] md:text-xs text-slate-400 dark:text-slate-500 mt-0.5 md:mt-1 leading-relaxed">
-                    Payment modes and control numbers.</div>
-                </button>
-              </div>
+
             </div>
           </div>
 
@@ -298,7 +326,32 @@
           </div>
         </div>
 
-        <!-- Tab 2: Dashboard Overview -->
+        <!-- Citations Sidebar Panel -->
+        <aside id="citations-panel" class="hidden w-72 lg:w-80 border-l border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-mancity-bgDark flex-shrink-0 absolute right-0 h-full z-10 shadow-xl md:shadow-none md:relative md:translate-x-0 transition-transform duration-300">
+          <div class="h-full flex flex-col">
+            <div class="p-3 md:p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-mancity-darkSurface">
+              <h3 class="font-bold text-xs md:text-sm text-slate-800 dark:text-white flex items-center gap-1.5 md:gap-2">
+                <i data-lucide="book-open" class="w-3.5 h-3.5 md:w-4 md:h-4 text-mancity-sky"></i> RAG Citations
+              </h3>
+              <button onclick="toggleCitations(false)" class="p-1.5 md:p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <i data-lucide="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+            <div id="citations-content" class="flex-1 overflow-y-auto p-3 md:p-4">
+              <div class="flex flex-col items-center justify-center text-center mt-8 md:mt-12 text-slate-400 space-y-3">
+                <i data-lucide="search" class="w-6 h-6 md:w-8 md:h-8 opacity-60"></i>
+                <p class="text-xs italic">Submit a question to see semantic search context.</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Mobile Citations Overlay -->
+        <div id="citations-overlay" onclick="closeMobileCitations()" class="fixed inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm z-[25] hidden transition-opacity md:hidden"></div>
+
+      </div>
+
+      <!-- Tab 2: Dashboard Overview -->
         <div id="tab-dashboard" class="hidden flex-1 overflow-y-auto p-3 md:p-8 bg-slate-50 dark:bg-mancity-bgDark">
           <div class="max-w-5xl mx-auto space-y-4 md:space-y-8">
             <!-- Welcome Greeting Card -->
@@ -453,21 +506,222 @@
     const API_URL = "";
     let currentTab = "chat";
     let isCitationsOpen = false;
+    let currentSessionId = null;
     const messageData = {};
+    let isSignupMode = false;
 
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
+      checkAuth();
       checkServices();
       setInterval(checkServices, 10000);
       document.getElementById("query-input-field").addEventListener("keypress", (e) => {
         if (e.key === "Enter") submitQuery();
       });
-      document.querySelectorAll(".suggestion-cards button[data-question]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          selectPredefined(btn.getAttribute("data-question"));
-        });
-      });
     });
+
+    function checkAuth() {
+      const token = localStorage.getItem("udsm_access_token");
+      const overlay = document.getElementById("auth-overlay");
+      if (!token) {
+        overlay.classList.remove("hidden");
+      } else {
+        overlay.classList.add("hidden");
+        fetchUserProfile();
+        loadSessions();
+      }
+    }
+
+    function toggleAuthMode() {
+      isSignupMode = !isSignupMode;
+      document.getElementById("auth-title").textContent = isSignupMode ? "Create Account" : "Welcome Back";
+      document.getElementById("auth-subtitle").textContent = isSignupMode ? "Register to access the portal" : "Sign in to access the portal";
+      document.getElementById("auth-btn-text").textContent = isSignupMode ? "Sign Up" : "Sign In";
+      document.getElementById("auth-toggle-text").textContent = isSignupMode ? "Already have an account? Sign in" : "Don't have an account? Sign up";
+      document.getElementById("name-field-container").classList.toggle("hidden", !isSignupMode);
+      document.getElementById("auth-error").classList.add("hidden");
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("auth-email").value;
+      const password = document.getElementById("auth-password").value;
+      const name = document.getElementById("auth-name").value;
+      const errorDiv = document.getElementById("auth-error");
+      const btn = document.getElementById("auth-submit-btn");
+      const originalText = document.getElementById("auth-btn-text").textContent;
+      
+      errorDiv.classList.add("hidden");
+      document.getElementById("auth-btn-text").textContent = "Processing...";
+      btn.disabled = true;
+
+      try {
+        let response;
+        if (isSignupMode) {
+          response = await fetch(API_URL + "/auth/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password, full_name: name })
+          });
+        } else {
+          const formData = new URLSearchParams();
+          formData.append("username", email);
+          formData.append("password", password);
+          
+          response = await fetch(API_URL + "/auth/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formData
+          });
+        }
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem("udsm_access_token", data.access_token);
+          document.getElementById("auth-overlay").classList.add("hidden");
+          document.getElementById("auth-password").value = "";
+          fetchUserProfile();
+          loadSessions();
+        } else {
+          errorDiv.textContent = data.detail || "Authentication failed.";
+          errorDiv.classList.remove("hidden");
+        }
+      } catch (err) {
+        errorDiv.textContent = "Network error. Please try again.";
+        errorDiv.classList.remove("hidden");
+      } finally {
+        document.getElementById("auth-btn-text").textContent = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("udsm_access_token");
+      checkAuth();
+    }
+    
+    function getAuthHeaders() {
+      const token = localStorage.getItem("udsm_access_token");
+      return token ? { "Authorization": `Bearer ${token}` } : {};
+    }
+    
+    async function fetchUserProfile() {
+      try {
+        const response = await fetch(API_URL + "/auth/me", {
+          headers: getAuthHeaders()
+        });
+        if (response.ok) {
+          const user = await response.json();
+          const displayName = user.full_name || user.email.split('@')[0];
+          document.getElementById("user-name-display").textContent = displayName;
+          document.getElementById("user-role-display").textContent = user.role;
+          
+          const avatar = document.getElementById("user-avatar");
+          avatar.innerHTML = displayName.charAt(0).toUpperCase();
+        }
+      } catch (e) {
+        console.error("Failed to load user profile");
+      }
+    }
+    
+    function startNewChat() {
+      currentSessionId = null;
+      document.getElementById("chat-messages").innerHTML = `
+        <div id="chat-welcome" class="max-w-2xl mx-auto text-center mt-8 md:mt-20 px-4 md:p-6 space-y-4 md:space-y-6">
+          <div class="inline-flex p-3 md:p-4.5 rounded-2xl md:rounded-3xl bg-mancity-sky/10 text-mancity-sky shadow-sm shadow-mancity-sky/5">
+            <img src="/static/udsm-logo.png" alt="UDSM Logo" class="w-16 h-16 md:w-20 md:h-20 object-contain">
+          </div>
+          <div>
+            <h3 class="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight px-2">University Student Support AI</h3>
+            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto px-2">Ask questions regarding course registration, hostels application, tuition control numbers, or rules for examination deferment.</p>
+          </div>
+        </div>
+      `;
+      highlightActiveSession();
+    }
+    
+    async function loadSessions() {
+      try {
+        const response = await fetch(API_URL + "/chat/sessions", {
+          headers: getAuthHeaders()
+        });
+        if (response.ok) {
+          const sessions = await response.json();
+          const list = document.getElementById("chat-history-list");
+          list.innerHTML = "";
+          sessions.forEach(s => {
+            const btn = document.createElement("a");
+            btn.href = "#";
+            btn.className = `session-btn group flex items-center justify-between px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition ${currentSessionId === s.id ? 'bg-white/10 text-white font-semibold' : ''}`;
+            btn.onclick = (e) => { e.preventDefault(); loadChatHistory(s.id); closeMobileSidebar(); };
+            btn.innerHTML = `
+              <div class="flex items-center gap-3 min-w-0">
+                <i data-lucide="message-square" class="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-500 flex-shrink-0"></i>
+                <span class="sidebar-text truncate">${s.title}</span>
+              </div>
+              <button onclick="event.stopPropagation(); event.preventDefault(); deleteSession('${s.id}')" class="trash-btn p-1 rounded text-slate-500 hover:text-rose-500 hover:bg-rose-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" title="Delete Chat">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5 md:w-4 md:h-4"></i>
+              </button>
+            `;
+            list.appendChild(btn);
+          });
+          lucide.createIcons();
+        }
+      } catch(e) { console.error("Failed to load sessions"); }
+    }
+    
+    async function deleteSession(sessionId) {
+      if (!confirm("Are you sure you want to delete this chat?")) return;
+      try {
+        const response = await fetch(API_URL + `/chat/sessions/${sessionId}`, {
+          method: "DELETE",
+          headers: getAuthHeaders()
+        });
+        if (response.ok) {
+          if (currentSessionId === sessionId) {
+            startNewChat();
+          }
+          loadSessions();
+        } else {
+          alert("Failed to delete the chat.");
+        }
+      } catch (e) {
+        console.error("Error deleting session:", e);
+      }
+    }
+    
+    async function loadChatHistory(sessionId) {
+      currentSessionId = sessionId;
+      highlightActiveSession();
+      try {
+        const response = await fetch(API_URL + `/chat/sessions/${sessionId}`, {
+          headers: getAuthHeaders()
+        });
+        if (response.ok) {
+          const history = await response.json();
+          const container = document.getElementById("chat-messages");
+          container.innerHTML = "";
+          history.forEach(i => {
+            appendMessage("user", i.question);
+            appendMessage("assistant", i.answer, i.rag_context_used, i.category || "", i.question, [], "Low", 0, false);
+          });
+        }
+      } catch(e) { console.error("Failed to load history"); }
+    }
+    
+    function highlightActiveSession() {
+      const btns = document.querySelectorAll("#chat-history-list .session-btn");
+      btns.forEach(b => {
+        b.classList.remove('bg-white/10', 'text-white', 'font-semibold');
+        b.classList.add('text-slate-400');
+      });
+      if(currentSessionId) {
+        // Highlighting logic can go here if we attach id's to buttons, 
+        // but loadSessions re-renders it with highlights correctly.
+        loadSessions(); 
+      }
+    }
 
     function openMobileSidebar() {
       document.getElementById("sidebar").classList.remove("-translate-x-full");
@@ -538,36 +792,11 @@
 
     function switchTab(tabName) {
       currentTab = tabName;
-      document.getElementById("tab-chat").classList.toggle("hidden", tabName !== "chat");
-      document.getElementById("tab-dashboard").classList.toggle("hidden", tabName !== "dashboard");
-
-      const chatBtn = document.getElementById("nav-chat");
-      const dashboardBtn = document.getElementById("nav-dashboard");
-
-      if (tabName === "chat") {
-        chatBtn.style.backgroundColor = "#6CABDD";
-        chatBtn.className = "nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-white font-semibold transition-all duration-200 shadow-sm shadow-mancity-sky/10";
-        dashboardBtn.style.backgroundColor = "transparent";
-        dashboardBtn.className = "nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all duration-200";
-      } else {
-        chatBtn.style.backgroundColor = "transparent";
-        chatBtn.className = "nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all duration-200";
-        dashboardBtn.style.backgroundColor = "#6CABDD";
-        dashboardBtn.className = "nav-btn flex items-center gap-3 px-3 md:px-4 py-2.5 md:py-3 rounded-xl text-white font-semibold transition-all duration-200 shadow-sm shadow-mancity-sky/10";
-      }
-    }
-
-    function selectPredefined(questionText) {
-      try {
-        switchTab("chat");
-        const input = document.getElementById("query-input-field");
-        if (input) {
-          input.value = questionText;
-          submitQuery();
-        }
-      } catch (e) {
-        console.error("selectPredefined error:", e);
-      }
+      const tabChat = document.getElementById("tab-chat");
+      const tabDashboard = document.getElementById("tab-dashboard");
+      
+      if (tabChat) tabChat.classList.toggle("hidden", tabName !== "chat");
+      if (tabDashboard) tabDashboard.classList.toggle("hidden", tabName !== "dashboard");
     }
 
     let sidebarCollapsed = false;
@@ -579,10 +808,10 @@
 
       if (sidebarCollapsed) {
         sidebar.classList.remove("w-64");
-        sidebar.classList.add("w-16");
+        sidebar.classList.add("w-16", "collapsed");
         if (icon) icon.setAttribute("data-lucide", "chevron-right");
       } else {
-        sidebar.classList.remove("w-16");
+        sidebar.classList.remove("w-16", "collapsed");
         sidebar.classList.add("w-64");
         if (icon) icon.setAttribute("data-lucide", "chevron-left");
       }
@@ -637,14 +866,18 @@
       try {
         const response = await fetch(API_URL + "/ask", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: query, use_improved_prompt: useImproved })
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+          body: JSON.stringify({ question: query, use_improved_prompt: useImproved, session_id: currentSessionId })
         });
 
         document.getElementById(loaderId).remove();
 
         if (response.ok) {
           const data = await response.json();
+          if(!currentSessionId && data.session_id) {
+            currentSessionId = data.session_id;
+            loadSessions();
+          }
           appendMessage("assistant", data.answer, data.rag_context_used, data.category, query, data.sources, data.confidence_label, data.confidence_score, data.faq_direct);
           updateCitationsPane(data.rag_context_used, data.category, query, data.sources);
         } else {
@@ -652,8 +885,10 @@
           appendMessage("assistant", "⚠️ Error: " + (err.detail || "Failed to retrieve a response."));
         }
       } catch (e) {
-        document.getElementById(loaderId).remove();
-        appendMessage("assistant", "❌ Network Error: Could not reach the API backend server.");
+        console.error("Error in submitQuery:", e);
+        const loader = document.getElementById(loaderId);
+        if (loader) loader.remove();
+        appendMessage("assistant", "❌ Error processing request: " + e.message);
       }
     }
 
@@ -680,12 +915,17 @@
           <div class="w-6 h-6 md:w-8 md:h-8 rounded-full flex-shrink-0 flex items-center justify-center text-white" style="background-color: #6CABDD;">
             <i data-lucide="graduation-cap" class="w-3 h-3 md:w-4 md:h-4"></i>
           </div>
-          <div class="flex-1 flex items-center gap-2 md:gap-3">
-            <span class="flex h-2 w-2 md:h-2.5 md:w-2.5 relative">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style="background-color: #6CABDD;"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 md:h-2.5 md:w-2.5" style="background-color: #6CABDD;"></span>
-            </span>
-            <span class="text-[10px] md:text-xs text-slate-400 font-medium">${text}</span>
+          <div class="flex-1 min-w-0 space-y-2.5 md:space-y-3 pt-0.5">
+            <div class="h-2.5 md:h-3 bg-slate-200 dark:bg-mancity-navy-light/40 rounded-full animate-pulse w-3/4"></div>
+            <div class="h-2.5 md:h-3 bg-slate-200 dark:bg-mancity-navy-light/40 rounded-full animate-pulse w-full"></div>
+            <div class="h-2.5 md:h-3 bg-slate-200 dark:bg-mancity-navy-light/40 rounded-full animate-pulse w-5/6"></div>
+            <div class="flex items-center gap-2 pt-2">
+              <span class="flex h-2 w-2 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style="background-color: #6CABDD;"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2" style="background-color: #6CABDD;"></span>
+              </span>
+              <span class="text-[10px] md:text-xs text-slate-400 font-medium">${text}</span>
+            </div>
           </div>
         `;
       } else {
@@ -760,7 +1000,7 @@
       try {
         const response = await fetch(API_URL + "/feedback", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
           body: JSON.stringify({ question: data.question || "", answer: data.answer || "", rating: ratingValue })
         });
         if (response.ok) {
