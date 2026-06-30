@@ -126,13 +126,43 @@ class LLMClient:
             logger.error(f"Error loading FAQ database: {e}")
             return []
 
+    def _expand_acronyms(self, question: str) -> str:
+        acronyms = {
+            "bit": "Business Information Technology",
+            "cit": "Computer Engineering and Information Technology",
+            "ceit": "Computer Engineering and Information Technology",
+            "bcom": "Bachelor of Commerce",
+            "bsc": "Bachelor of Science",
+            "ba": "Bachelor of Arts",
+            "coict": "College of Information and Communication Technologies",
+            "udbs": "Business School",
+            "conas": "College of Natural and Applied Sciences",
+            "coet": "College of Engineering and Technology",
+            "coss": "College of Social Sciences",
+            "cohu": "College of Humanities",
+            "udse": "School of Education",
+            "iks": "Institute of Kiswahili Studies",
+            "ids": "Institute of Development Studies",
+            "soaf": "School of Aquatic Sciences and Fisheries Technology",
+            "sjmc": "School of Journalism and Mass Communication"
+        }
+        words = question.split()
+        expanded = []
+        for w in words:
+            clean = re.sub(r'[^a-zA-Z0-9]', '', w.lower())
+            expanded.append(w)
+            if clean in acronyms:
+                expanded.append(f"({acronyms[clean]})")
+        return " ".join(expanded)
+
     def retrieve_context(self, question: str) -> Tuple[Optional[str], Optional[str], List[str], float]:
         """
         Retrieve relevant context for a question using:
           1. FAQ keyword matching (fast, direct answers)
           2. Semantic vector search via ChromaDB (replaces old keyword overlap)
         """
-        question_lower = question.lower()
+        expanded_question = self._expand_acronyms(question)
+        question_lower = expanded_question.lower()
 
         # 1. FAQ keyword matching — kept as-is for fast direct answers
         matched_faqs = []
@@ -145,7 +175,7 @@ class LLMClient:
                     break
 
         # 2. Semantic vector search — replaces old keyword overlap loop
-        vec_context, vec_category, vec_sources, vec_score = self.vector_store.retrieve(question)
+        vec_context, vec_category, vec_sources, vec_score = self.vector_store.retrieve(expanded_question)
 
         # 3. Build combined context (FAQ blocks first, then vector chunks)
         context_parts = []
@@ -196,7 +226,9 @@ class LLMClient:
 
         system = (
             "You are the UDSM Student Support Assistant. Answer based only on the official UDSM information below. "
-            "Never invent policies or fees."
+            "Never invent policies or fees. "
+            "CRITICAL: Do not simply tell the user to read the attached documents or visit links. "
+            "You must extract the specific information requested from the provided context and summarize it clearly in your response."
         )
         sections.append(system)
 

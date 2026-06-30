@@ -18,6 +18,8 @@ import hashlib
 import json
 import logging
 import re
+import pickle
+import numpy as np
 from pathlib import Path
 from typing import Optional, List, Tuple
 
@@ -86,6 +88,8 @@ class VectorStore:
         self._model = None
         self._client = None
         self._collection = None
+        self._bm25 = None
+        self._bm25_data = None
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -101,6 +105,20 @@ class VectorStore:
             name=self.COLLECTION_NAME,
             metadata={"hnsw:space": "cosine"}
         )
+        self._load_bm25()
+
+    def _load_bm25(self):
+        """Load the BM25 index from disk if it exists."""
+        if self._bm25 is not None:
+            return
+        bm25_path = Path(self._persist_path) / "bm25_index.pkl"
+        if bm25_path.exists():
+            try:
+                with open(bm25_path, "rb") as f:
+                    self._bm25, self._bm25_data = pickle.load(f)
+                logger.info("BM25 index loaded successfully.")
+            except Exception as e:
+                logger.error(f"Failed to load BM25 index: {e}")
 
     # ------------------------------------------------------------------
     # Content-hash helpers — detect doc changes automatically
@@ -275,6 +293,22 @@ class VectorStore:
         )
 
         total = self._collection.count()
+
+        # Build and save BM25 Index
+        logger.info("Building BM25 keyword index...")
+        try:
+            from rank_bm25 import BM25Okapi
+            tokenized_corpus = [doc.lower().split() for doc in all_texts]
+            self._bm25 = BM25Okapi(tokenized_corpus)
+            self._bm25_data = (all_ids, all_texts, all_metas)
+            
+            bm25_path = Path(self._persist_path) / "bm25_index.pkl"
+            with open(bm25_path, "wb") as f:
+                pickle.dump((self._bm25, self._bm25_data), f)
+            logger.info("BM25 keyword index built and saved.")
+        except Exception as e:
+            logger.error(f"Failed to build BM25 index: {e}")
+
         # Persist the hash so subsequent runs can detect changes automatically
         self._save_hash(current_hash)
         logger.info(f"Vector store built successfully. Total chunks indexed: {total}")
@@ -287,13 +321,10 @@ class VectorStore:
     ) -> Tuple[Optional[str], Optional[str], List[str], float]:
         """
         Embed the question and return the top-k most semantically similar chunks.
-
+        Fuses Semantic (Chroma) and Keyword (BM25) search using RRF.
+        
         Returns:
             (context_text, category, sources, score)
-            - context_text : combined text of top chunks, ready to inject into prompt
-            - category     : inferred from the top-matching document name
-            - sources      : deduplicated list of source document names
-            - score        : 0.0 – 1.0 relevance score (converted from cosine distance)
         """
         self._load()
 
@@ -302,47 +333,81 @@ class VectorStore:
             return None, None, [], 0.0
 
         try:
+            # 1. Semantic Search
             question_embedding = self._model.encode([question]).tolist()
-
-            results = self._collection.query(
+            chroma_results = self._collection.query(
                 query_embeddings=question_embedding,
-                n_results=min(top_k, self._collection.count()),
+                n_results=min(top_k * 2, self._collection.count()),
                 include=["documents", "metadatas", "distances"],
             )
 
-            documents: List[str] = results["documents"][0]
-            metadatas: List[dict] = results["metadatas"][0]
-            distances: List[float] = results["distances"][0]
+            chroma_ids = chroma_results["ids"][0] if chroma_results["ids"] else []
+            chroma_distances = chroma_results["distances"][0] if chroma_results.get("distances") else []
+            chroma_ranks = {cid: rank for rank, cid in enumerate(chroma_ids, 1)}
 
-            if not documents:
+            # 2. Keyword Search (BM25)
+            bm25_ranks = {}
+            if self._bm25 and self._bm25_data:
+                all_ids, all_texts, all_metas = self._bm25_data
+                tokenized_query = question.lower().split()
+                if tokenized_query:
+                    doc_scores = self._bm25.get_scores(tokenized_query)
+                    top_indices = np.argsort(doc_scores)[::-1][:top_k * 2]
+                    for rank, idx in enumerate(top_indices, 1):
+                        if doc_scores[idx] > 0:
+                            bm25_ranks[all_ids[idx]] = rank
+
+            # 3. Reciprocal Rank Fusion (RRF)
+            k_rrf = 60
+            fused_scores = {}
+            all_retrieved_ids = set(chroma_ranks.keys()).union(set(bm25_ranks.keys()))
+            
+            for cid in all_retrieved_ids:
+                rrf_score = 0.0
+                if cid in chroma_ranks:
+                    rrf_score += 1.0 / (k_rrf + chroma_ranks[cid])
+                if cid in bm25_ranks:
+                    rrf_score += 1.0 / (k_rrf + bm25_ranks[cid])
+                fused_scores[cid] = rrf_score
+                
+            sorted_fused_ids = sorted(fused_scores.keys(), key=lambda x: fused_scores[x], reverse=True)[:top_k]
+            
+            if not sorted_fused_ids:
                 return None, None, [], 0.0
-
-            # Build context string with source attribution headers
+                
+            # 4. Reconstruct response
+            all_ids, all_texts, all_metas = self._bm25_data if self._bm25_data else ([], [], [])
+            id_to_idx = {cid: idx for idx, cid in enumerate(all_ids)}
+            
             context_parts: List[str] = []
             sources: List[str] = []
             seen_docs = set()
+            
+            for cid in sorted_fused_ids:
+                if cid in id_to_idx:
+                    idx = id_to_idx[cid]
+                    doc_text = all_texts[idx]
+                    meta = all_metas[idx]
+                    
+                    doc_name = meta.get("doc", "Unknown")
+                    section = meta.get("section", "")
+                    header = f"[{doc_name} — {section}]" if section else f"[{doc_name}]"
+                    context_parts.append(f"{header}\n{doc_text}")
+                    if doc_name not in seen_docs:
+                        sources.append(doc_name)
+                        seen_docs.add(doc_name)
 
-            for doc_text, meta, dist in zip(documents, metadatas, distances):
-                doc_name = meta.get("doc", "Unknown")
-                section = meta.get("section", "")
-                header = f"[{doc_name} — {section}]" if section else f"[{doc_name}]"
-                context_parts.append(f"{header}\n{doc_text}")
-                if doc_name not in seen_docs:
-                    sources.append(doc_name)
-                    seen_docs.add(doc_name)
+            top_meta = all_metas[id_to_idx[sorted_fused_ids[0]]] if sorted_fused_ids and sorted_fused_ids[0] in id_to_idx else {}
+            category = top_meta.get("doc")
 
-            # Primary category = top result's document
-            category = metadatas[0].get("doc") if metadatas else None
-
-            # ChromaDB cosine distance: 0 = identical, 2 = opposite
-            # Convert to similarity in [0, 1]: similarity = 1 - (distance / 2)
-            top_distance = distances[0] if distances else 1.0
+            # Semantic score approximation
+            top_distance = chroma_distances[0] if chroma_distances else 1.0
             score = max(0.0, min(1.0, 1.0 - (top_distance / 2.0)))
 
             context_text = "\n\n".join(context_parts)
             logger.info(
-                f"Vector retrieval: top_score={score:.3f}, "
-                f"sources={sources[:3]}, chunks={len(documents)}"
+                f"Hybrid retrieval: top_score={score:.3f}, "
+                f"sources={sources[:3]}, chunks={len(context_parts)}"
             )
 
             return context_text, category, sources, score

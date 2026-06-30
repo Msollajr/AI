@@ -30,6 +30,7 @@ services:
       - ./backend:/app/backend
       - ./knowledge-base:/app/knowledge-base
       - ./frontend:/app/frontend
+      - ./source-docs:/app/source-docs
       # Keep volume mounts from base compose (logs, vector_store, hf_cache)
       - ./backend/logs:/app/backend/logs
       - vector_store_data:/app/backend/vector_store
